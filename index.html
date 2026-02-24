@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World Summit – 2nd Edition</title>
-  <!-- Google Fonts: bold display (Playfair Display) + light sans (Poppins) -->
+  <title>World Summit · 2nd Edition</title>
+  <!-- Google Fonts: Playfair Display + DM Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* -------------------- RESET & VARIABLES -------------------- */
+    /* ----- CSS RESET & VARIABLES ----- */
     * {
       margin: 0;
       padding: 0;
@@ -17,74 +17,99 @@
     }
 
     :root {
-      --bg-light: #F7F4F0;
-      --white: #ffffff;
+      --bg-white: #FFFFFF;
+      --bg-light: #F5F3F7;
       --crimson: #C8102E;
-      --purple: #6B3FA0;
-      --teal: #1A5276;
-      --gray-light: #e0dcd5;
-      --gray-mid: #c0bcb5;
-      --shadow: 0 20px 30px -10px rgba(0,0,0,0.15);
-      --border-radius-card: 16px;
+      --deep-purple: #5B2D8E;
+      --teal: #1B4F72;
+      --light-purple: #8E5BB5;
+      --muted: #7B6E8A;
+      --gradient: linear-gradient(135deg, #C8102E, #8E2D8E, #1B4F72);
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
     }
 
     body {
-      background-color: var(--bg-light);
-      color: #1e1e1e;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 300;
+      background-color: var(--bg-white);
+      color: #2a2a2a;
+      font-family: var(--font-body);
       line-height: 1.5;
       overflow-x: hidden;
     }
 
-    h1, h2, h3, h4, .display-font {
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
+    /* custom scrollbar with gradient */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-light);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gradient);
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--light-purple);
     }
 
-    .section-title {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.02em;
-      color: var(--teal);
-    }
-    .section-subtitle {
-      font-size: 1.2rem;
-      color: #4a4a4a;
-      margin-bottom: 2.5rem;
-      font-weight: 300;
-    }
-
-    /* -------------------- UTILS & COMMENTS -------------------- */
-    /* TODO: Replace all placeholder images with real assets */
-    /* All 'YOUR_LOGO_HERE.png' occurrences must be replaced */
-
-    /* -------------------- FIXED NAVBAR -------------------- */
-    .navbar {
+    /* progress bar */
+    #progress-bar {
       position: fixed;
       top: 0;
       left: 0;
+      height: 4px;
+      width: 0%;
+      background: var(--gradient);
+      z-index: 1001;
+      transition: width 0.1s ease;
+    }
+
+    /* navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
       width: 100%;
-      padding: 1.2rem 5%;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      padding: 1rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(247, 244, 240, 0.85);
-      backdrop-filter: blur(8px);
       z-index: 1000;
-      transition: padding 0.3s, box-shadow 0.3s;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: padding 0.3s, box-shadow 0.3s, background 0.3s;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
     }
     .navbar.shrink {
-      padding: 0.6rem 5%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 0.5rem 2rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.97);
     }
-    .logo-nav {
-      width: 140px; /* navbar logo size */
-      transition: width 0.3s;
+    .nav-logo {
+      width: 50px;
+      height: 50px;
     }
-    .navbar.shrink .logo-nav {
-      width: 100px;
+    .logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      background: var(--gradient);
+      padding: 2px;
+    }
+    .logo-fallback {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--gradient);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.2;
+      padding: 4px;
     }
     .nav-links {
       display: flex;
@@ -93,693 +118,707 @@
     }
     .nav-links a {
       text-decoration: none;
+      font-weight: 500;
       color: var(--teal);
-      font-weight: 400;
-      font-size: 1rem;
+      position: relative;
+      font-family: var(--font-body);
+      transition: color 0.2s;
+    }
+    .nav-links a.active {
+      color: var(--crimson);
+      font-weight: 600;
+    }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gradient);
+      border-radius: 2px;
     }
     .hamburger {
       display: none;
       font-size: 2rem;
       cursor: pointer;
-      color: var(--purple);
+      color: var(--teal);
     }
-    /* mobile menu overlay */
-    .mobile-menu {
+    #menu-toggle {
       display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background: var(--bg-light);
-      z-index: 999;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem;
-      font-size: 2rem;
-    }
-    .mobile-menu.active {
-      display: flex;
-    }
-    .mobile-menu a {
-      color: var(--purple);
-      text-decoration: none;
-    }
-    .close-btn {
-      position: absolute;
-      top: 2rem;
-      right: 2rem;
-      font-size: 3rem;
-      cursor: pointer;
     }
 
-    /* -------------------- HERO SECTION -------------------- */
-    .hero {
+    /* sections general */
+    section {
+      padding: 6rem 2rem;
       position: relative;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color: #1e2b3a;
-      overflow: hidden;
-      background-color: var(--bg-light);
-      margin-top: 0;
-      padding-top: 80px; /* navbar offset */
     }
-    .world-bg {
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--crimson);
+    }
+    .section-sub {
+      color: var(--deep-purple);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .divider-wave {
+      margin-top: -2rem;
+      margin-bottom: 0;
+      line-height: 0;
+    }
+    .divider-wave svg {
+      display: block;
+      width: 100%;
+      height: 50px;
+      fill: var(--bg-light);
+    }
+
+    /* fade-slide-up animation */
+    .animate-title, .fade-slide {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+    .animate-title.visible, .fade-slide.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .stagger-grid {
+      display: grid;
+      gap: 2rem;
+    }
+    .stagger-item {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .stagger-grid.visible .stagger-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .stagger-grid.visible .stagger-item:nth-child(1) { transition-delay: 0.1s; }
+    .stagger-grid.visible .stagger-item:nth-child(2) { transition-delay: 0.25s; }
+    .stagger-grid.visible .stagger-item:nth-child(3) { transition-delay: 0.4s; }
+    .stagger-grid.visible .stagger-item:nth-child(4) { transition-delay: 0.55s; }
+    .stagger-grid.visible .stagger-item:nth-child(5) { transition-delay: 0.7s; }
+    .stagger-grid.visible .stagger-item:nth-child(6) { transition-delay: 0.85s; }
+
+    /* hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(145deg, #fff, #F0EBF8, #EBF2F8);
+      position: relative;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+    .world-map-bg {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 0;
-      opacity: 0.5;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" opacity="0.06"><path fill="%235B2D8E" d="M305.5 200.2l-4-8 5-4 9 1 3 8-6 7-7-4zm105 30l-5-10 9-7 12 2 4 12-9 7-11-4zm-210-70l-7-8 6-10 13-3 9 8-4 12-11 4-6-3zM550 310l-9-13 8-12 16-2 8 11-6 14-12 5-5-3z"/></svg>');
+      background-repeat: repeat;
+      background-size: 600px;
       pointer-events: none;
-      transition: transform 0.1s ease-out;
-    }
-    .world-bg svg {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      padding: 0 20px;
     }
     .hero-logo {
-      width: 220px; /* hero logo size */
-      margin-bottom: 1.5rem;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero-logo .logo-img {
+      width: 140px;
+      height: 140px;
+    }
+    .hero-logo .logo-fallback {
+      width: 140px;
+      height: 140px;
+      font-size: 1.2rem;
     }
     .hero h1 {
-      font-size: 6rem;
-      line-height: 1;
+      font-family: var(--font-display);
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .hero-word-world {
       color: var(--crimson);
-      text-shadow: 4px 4px 0 var(--purple);
-      margin-bottom: 0.2rem;
     }
-    .hero .subtitle {
-      font-size: 2.5rem;
-      font-weight: 300;
+    .hero-word-summit {
       color: var(--teal);
-      margin-bottom: 1rem;
     }
-    .hero .slogan {
-      font-size: 1.8rem;
-      font-style: italic;
-      color: var(--purple);
-    }
-    .hero .date-loc {
-      font-size: 1.4rem;
-      margin: 1.5rem 0 2rem;
-      letter-spacing: 2px;
-    }
-    .cta-btn {
-      display: inline-block;
-      background: var(--crimson);
+    .edition-badge {
+      background: var(--deep-purple);
       color: white;
-      padding: 1rem 3rem;
-      border-radius: 50px;
+      display: inline-block;
+      padding: 0.3rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+    }
+    .slogan {
       font-size: 1.4rem;
+      color: var(--deep-purple);
+      font-weight: 400;
+    }
+    .date-place {
+      color: var(--muted);
+      margin: 1rem 0 2rem;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.9rem 2.5rem;
+      border-radius: 40px;
       font-weight: 600;
       text-decoration: none;
-      box-shadow: 0 10px 20px rgba(200,16,46,0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: none;
+      transition: all 0.3s;
+      border: 2px solid transparent;
       cursor: pointer;
+      font-family: var(--font-body);
     }
-    .cta-btn:hover {
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--light-purple);
+      border-color: var(--teal);
       transform: scale(1.05);
-      box-shadow: 0 15px 30px rgba(200,16,46,0.5);
     }
+    .btn-outline {
+      border: 2px solid var(--teal);
+      color: var(--teal);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: var(--teal);
+      color: white;
+    }
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: var(--deep-purple);
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0);} 40%{transform:translateX(-50%) translateY(-20px);} 60%{transform:translateX(-50%) translateY(-10px);} }
 
-    /* -------------------- SPONSORS MARQUEE -------------------- */
-    .sponsors {
-      padding: 4rem 5%;
-      background: var(--white);
-      position: relative;
+    /* orbs parallax */
+    .orb {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle at 30% 30%, rgba(200,16,46,0.2), rgba(91,45,142,0.2), rgba(27,79,114,0.2));
+      filter: blur(50px);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      transition: transform 0.1s;
     }
-    .marquee {
+    .orb1 { top: 10%; left: 5%; }
+    .orb2 { bottom: 10%; right: 5%; width: 300px; height: 300px; }
+
+    /* sponsors marquee */
+    .marquee-container {
       overflow: hidden;
       white-space: nowrap;
-      position: relative;
-      width: 100%;
-      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+      background: var(--bg-light);
+      padding: 2rem 0;
+      border-radius: 60px;
     }
     .marquee-track {
-      display: inline-block;
-      animation: scroll 30s linear infinite;
+      display: inline-flex;
+      gap: 3rem;
+      animation: scrollMarquee 30s linear infinite;
     }
-    .sponsor-item {
-      display: inline-block;
-      width: 200px;
-      height: 120px;
-      background: var(--gray-light);
-      margin: 0 20px;
-      border-radius: 20px;
+    .marquee-container.paused .marquee-track {
+      animation-play-state: paused;
+    }
+    .sponsor-box {
+      width: 160px;
+      height: 100px;
+      border: 2px dashed var(--light-purple);
+      background: white;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      color: #555;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      font-weight: 600;
+      color: var(--teal);
+      border-radius: 20px;
     }
-    @keyframes scroll {
+    @keyframes scrollMarquee {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
 
-    /* -------------------- EXHIBITORS SECTION -------------------- */
-    .exhibitors {
-      padding: 5rem 5%;
-      background: var(--bg-light);
-      position: relative;
-    }
-    .scroll-container {
-      position: relative;
+    /* exhibitors carousel & tilt */
+    .exhibitor-carousel {
       display: flex;
-      align-items: center;
-    }
-    .cards-wrapper {
-      display: flex;
-      gap: 2rem;
+      gap: 1.5rem;
       overflow-x: auto;
       scroll-behavior: smooth;
-      padding: 1rem 0.5rem;
+      padding: 1rem 0;
       scrollbar-width: none;
     }
-    .cards-wrapper::-webkit-scrollbar {
-      display: none;
-    }
+    .exhibitor-carousel::-webkit-scrollbar { display: none; }
     .exhibitor-card {
-      min-width: 280px;
-      background: var(--white);
-      border-radius: var(--border-radius-card);
+      flex: 0 0 280px;
+      background: white;
+      border-radius: 24px;
       padding: 1.5rem;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border: 1px solid var(--bg-light);
+      transition: box-shadow 0.2s;
       transform-style: preserve-3d;
-      cursor: pointer;
+      will-change: transform;
     }
-    .flag-placeholder {
+    .exhibitor-card .flag-placeholder {
       width: 100%;
       height: 120px;
-      background: linear-gradient(145deg, var(--teal), var(--purple));
-      border-radius: 12px;
+      background: var(--gradient);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .carousel-arrow {
+      background: var(--gradient);
+      color: white;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 2rem;
+      cursor: pointer;
+      margin: 1rem 0.5rem 0 0;
+    }
+
+    /* networking dots */
+    .network-dots {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 3rem 0;
+      position: relative;
+    }
+    .dot-group {
+      text-align: center;
+    }
+    .dot {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--gradient);
+      margin: 0 auto 0.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: bold;
-      margin-bottom: 1rem;
     }
-    .category-badge {
-      display: inline-block;
-      background: var(--crimson);
-      color: white;
-      padding: 0.2rem 1rem;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      margin: 0.5rem 0;
-    }
-    .arrow {
-      background: var(--purple);
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      cursor: pointer;
-      position: absolute;
-      z-index: 10;
-      opacity: 0.8;
-      user-select: none;
-    }
-    .arrow-left {
-      left: -10px;
-    }
-    .arrow-right {
-      right: -10px;
-    }
-
-    /* -------------------- CONFERENCES GRID -------------------- */
-    .conferences {
-      padding: 5rem 5%;
-      background: var(--white);
-    }
-    .speaker-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2.5rem;
-    }
-    .speaker-card {
-      background: var(--bg-light);
-      border-radius: 20px;
-      padding: 2rem 1.5rem;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-      transition: transform 0.3s, opacity 0.5s;
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .speaker-card.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .photo-placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: var(--teal);
-      margin: 0 auto 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 0.9rem;
-    }
-    .speaker-name {
-      font-weight: 600;
-      font-size: 1.3rem;
-      color: var(--purple);
-    }
-
-    /* -------------------- NETWORKING SPACE -------------------- */
-    .networking {
-      padding: 5rem 5%;
-      background: var(--bg-light);
+    .connector-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, var(--light-purple), var(--teal));
       position: relative;
+      animation: pulseLine 2s infinite;
     }
-    .dots-container {
-      position: relative;
-      height: 300px;
-      margin: 3rem 0;
-      background: rgba(255,255,255,0.5);
-      border-radius: 60px;
-      overflow: hidden;
-    }
-    #networkCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    .experts-preview {
-      display: flex;
-      gap: 2rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 3rem 0;
-    }
-    .expert-card {
-      background: var(--white);
-      padding: 1.5rem;
-      border-radius: 30px;
-      width: 200px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .expert-photo {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--purple);
-      margin: 0 auto 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
+    @keyframes pulseLine { 0%{opacity:0.3} 50%{opacity:1} }
 
-    /* -------------------- QUIZ SECTION -------------------- */
-    .quiz {
-      padding: 5rem 5%;
-      background: linear-gradient(135deg, var(--purple) 0%, var(--teal) 100%);
-      color: white;
-      text-align: center;
-    }
-    .quiz .section-title {
-      color: white;
-    }
-    .prize-icon {
-      font-size: 6rem;
-      margin: 2rem 0;
-      animation: bounce 2s infinite;
-    }
-    @keyframes bounce {
-      0%,100%{ transform: translateY(0); }
-      50%{ transform: translateY(-20px); }
-    }
-    .quiz .cta-btn {
-      background: white;
-      color: var(--purple);
-    }
-
-    /* -------------------- REGISTRATION TABS -------------------- */
-    .registration {
-      padding: 5rem 5%;
-      background: var(--white);
-    }
-    .tabs {
+    /* tabs registration */
+    .tab-bar {
       display: flex;
-      gap: 0.5rem;
+      gap: 1rem;
       margin-bottom: 2rem;
     }
     .tab {
-      padding: 1rem 2rem;
-      background: var(--gray-light);
-      border-radius: 40px 40px 0 0;
-      cursor: pointer;
+      padding: 0.8rem 2rem;
+      background: var(--bg-light);
+      border: none;
       font-weight: 600;
+      color: var(--teal);
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
     }
     .tab.active {
-      background: var(--crimson);
+      background: var(--gradient);
       color: white;
     }
     .form-panel {
-      display: none;
       background: var(--bg-light);
-      padding: 2.5rem;
-      border-radius: 0 20px 20px 20px;
-      box-shadow: var(--shadow);
+      padding: 2rem;
+      border-radius: 32px;
+      overflow: hidden;
+      transition: height 0.4s ease;
     }
-    .form-panel.active {
-      display: block;
+    .form-panel form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
     }
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    input, select {
-      width: 100%;
+    .form-panel input, .form-panel select {
       padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      font-family: 'Poppins', sans-serif;
-    }
-    .submit-btn {
-      background: var(--teal);
-      color: white;
-      padding: 1rem 3rem;
-      border: none;
-      border-radius: 50px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .submit-btn:hover {
-      background: var(--purple);
-      transform: scale(1.02);
-    }
-    .footnote {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: #777;
+      border: 1px solid #ddd;
+      border-radius: 60px;
+      font-family: var(--font-body);
     }
 
-    /* -------------------- FOOTER -------------------- */
-    footer {
-      background: #1e1e2f;
-      color: #ccc;
-      padding: 3rem 5%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
+    /* footer */
+    .footer {
+      background: var(--teal);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
     }
     .footer-logo {
-      width: 140px;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 1rem;
     }
     .social-icons a {
       color: white;
-      margin: 0 10px;
-      font-size: 1.5rem;
+      margin: 0 0.5rem;
+      font-size: 1.8rem;
       text-decoration: none;
     }
 
-    /* -------------------- WAVY DIVIDERS -------------------- */
-    .wave-divider {
-      position: relative;
-      top: 2px;
-    }
-    .wave-divider svg {
-      display: block;
-      width: 100%;
-      height: 60px;
-    }
-
-    /* -------------------- RESPONSIVE -------------------- */
-    @media (max-width: 900px) {
-      .nav-links { display: none; }
-      .hamburger { display: block; }
-      .hero h1 { font-size: 4rem; }
-      .section-title { font-size: 2.2rem; }
-    }
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 3rem; }
+    /* responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background: white;
+        position: absolute;
+        top: 70px;
+        right: 2rem;
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      }
+      #menu-toggle:checked + .hamburger + .nav-links {
+        display: flex;
+      }
+      .hamburger {
+        display: block;
+      }
+      .hero h1 {
+        font-size: 3rem;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- FIXED NAVBAR -->
+  <div id="progress-bar"></div>
+
+  <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
-    <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
-    <img src="Picture1.png" alt="World Summit Logo" class="logo logo-nav">
+    <div class="nav-logo">
+      <!-- LOGO: Replace src with your actual logo file path -->
+      <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'logo-fallback\'>WORLD SUMMIT</div>';">
+    </div>
+    <input type="checkbox" id="menu-toggle" style="display:none;">
+    <label for="menu-toggle" class="hamburger">☰</label>
     <ul class="nav-links">
-      <li><a href="#sponsors">Sponsors</a></li>
-      <li><a href="#exhibitors">Exhibitors</a></li>
-      <li><a href="#conferences">Talks</a></li>
-      <li><a href="#networking">Network</a></li>
-      <li><a href="#quiz">Quiz</a></li>
-      <li><a href="#register">Register</a></li>
+      <li><a href="#hero" class="nav-link">Home</a></li>
+      <li><a href="#sponsors" class="nav-link">Sponsors</a></li>
+      <li><a href="#exhibitors" class="nav-link">Exhibitors</a></li>
+      <li><a href="#conferences" class="nav-link">Conferences</a></li>
+      <li><a href="#networking" class="nav-link">Networking</a></li>
+      <li><a href="#quiz" class="nav-link">Quiz</a></li>
+      <li><a href="#registration" class="nav-link">Register</a></li>
     </ul>
-    <div class="hamburger" id="hamburger">☰</div>
   </nav>
 
-  <!-- MOBILE MENU -->
-  <div class="mobile-menu" id="mobileMenu">
-    <div class="close-btn" id="closeMenu">&times;</div>
-    <a href="#sponsors">Sponsors</a>
-    <a href="#exhibitors">Exhibitors</a>
-    <a href="#conferences">Talks</a>
-    <a href="#networking">Network</a>
-    <a href="#quiz">Quiz</a>
-    <a href="#register">Register</a>
-  </div>
-
-  <!-- HERO SECTION -->
-  <section class="hero" id="hero">
-    <div class="world-bg" id="worldBg">
-      <!-- simple SVG world map silhouette (light gray continents) -->
-      <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-        <rect width="1200" height="800" fill="#F0EBE5" />
-        <path fill="#D3CDC5" d="M200,200 Q300,100 400,200 T600,150 Q750,200 800,300 T700,450 Q600,500 500,450 T300,400 Q200,350 200,200 Z" />
-        <path fill="#D3CDC5" d="M900,300 Q1000,250 1100,300 T1150,450 Q1050,500 950,450 T850,350 Q830,300 900,300 Z" />
-        <path fill="#D3CDC5" d="M150,500 Q250,450 350,500 T450,600 Q400,700 300,680 T150,600 Q100,550 150,500 Z" />
-        <circle fill="#D3CDC5" cx="700" cy="600" r="70" />
-        <circle fill="#D3CDC5" cx="500" cy="300" r="40" />
-      </svg>
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="world-map-bg"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="container" style="position:relative; z-index:2;">
+      <div class="hero-logo">
+        <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'logo-fallback\'>WORLD SUMMIT</div>';">
+      </div>
+      <h1><span class="hero-word-world">WORLD</span> <span class="hero-word-summit">SUMMIT</span></h1>
+      <div class="edition-badge">2nd Edition</div>
+      <p class="slogan"><!-- TODO: Replace with your slogan -->"Bridging Cultures, Creating Futures"</p>
+      <p class="date-place"><!-- TODO: Replace -->October 12-14, 2025 · Paris, France</p>
+      <div class="btn-group">
+        <a href="#" class="btn btn-primary">Register Now</a>
+        <a href="#" class="btn btn-outline">Learn More</a>
+      </div>
     </div>
-    <div class="hero-content">
-      <!-- REPLACE 'Picture1.png' with your actual logo file path -->
-      <img src="Picture1.png" alt="World Summit Logo" class="hero-logo">
-      <h1>WORLD SUMMIT</h1>
-      <div class="subtitle">2nd Edition</div>
-      <div class="slogan">[YOUR SLOGAN HERE]</div>
-      <div class="date-loc">[DATE] · [CITY, COUNTRY]</div>
-      <a href="#register" class="cta-btn">Register Now</a>
-    </div>
+    <div class="scroll-indicator">⌄</div>
   </section>
 
-  <!-- wave divider -->
-  <div class="wave-divider"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path fill="#ffffff" d="M0,50 C300,150 600,-50 1440,50 L1440,100 L0,100 Z"/></svg></div>
+  <!-- divider wave -->
+  <div class="divider-wave"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0,50 C300,120 600,0 900,40 C1200,80 1440,10 1440,10 L1440,100 L0,100 Z"></path></svg></div>
 
   <!-- SPONSORS -->
-  <section class="sponsors" id="sponsors">
-    <h2 class="section-title">Our Sponsors</h2>
-    <div class="marquee">
-      <div class="marquee-track">
-        <!-- 8 placeholder logos repeated twice for seamless loop -->
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
-        <span class="sponsor-item">Sponsor Logo</span>
+  <section id="sponsors" class="container">
+    <h2 class="section-title animate-title">Our Partners & Sponsors</h2>
+    <div class="marquee-container" id="marqueeContainer">
+      <div class="marquee-track" id="marqueeTrack">
+        <!-- 8 placeholder boxes repeated twice for seamless loop -->
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 1</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 2</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 3</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 4</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 5</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 6</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 7</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 8</div>
+        <!-- duplicate -->
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 1</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 2</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 3</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 4</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 5</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 6</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 7</div>
+        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 8</div>
       </div>
     </div>
-    <!-- TODO: Replace placeholder sponsor boxes with actual logos -->
   </section>
+
+  <!-- divider -->
+  <div class="divider-wave"><svg viewBox="0 0 1440 100" style="transform:rotate(180deg)"><path d="M0,50 C300,120 600,0 900,40 C1200,80 1440,10 1440,10 L1440,100 L0,100 Z"></path></svg></div>
 
   <!-- EXHIBITORS -->
-  <section class="exhibitors" id="exhibitors">
-    <h2 class="section-title">Exhibitors</h2>
-    <div class="section-subtitle">Explore countries, study abroad opportunities & travel experiences</div>
-    <div class="scroll-container">
-      <div class="arrow arrow-left" id="scrollLeft">←</div>
-      <div class="cards-wrapper" id="exhibitorWrapper">
-        <!-- 6 cards -->
-        <div class="exhibitor-card" data-tilt>
-          <div class="flag-placeholder">🇺🇳 Flag</div>
-          <h3>Country Name</h3>
-          <span class="category-badge">Country Showcase</span>
-          <p>Description of the exhibition goes here.</p>
-        </div>
-        <div class="exhibitor-card" data-tilt>
-          <div class="flag-placeholder">🇬🇧 Flag</div>
-          <h3>Country Name</h3>
-          <span class="category-badge">Study Abroad</span>
-          <p>Description of the exhibition goes here.</p>
-        </div>
-        <div class="exhibitor-card" data-tilt>
-          <div class="flag-placeholder">🇯🇵 Flag</div>
-          <h3>Country Name</h3>
-          <span class="category-badge">Travel</span>
-          <p>Description of the exhibition goes here.</p>
-        </div>
-        <div class="exhibitor-card" data-tilt>
-          <div class="flag-placeholder">🇫🇷 Flag</div>
-          <h3>Country Name</h3>
-          <span class="category-badge">Country Showcase</span>
-          <p>Description of the exhibition goes here.</p>
-        </div>
-        <div class="exhibitor-card" data-tilt>
-          <div class="flag-placeholder">🇩🇪 Flag</div>
-          <h3>Country Name</h3>
-          <span class="category-badge">Study Abroad</span>
-          <p>Description of the exhibition goes here.</p>
-        </div>
-        <div class="exhibitor-card" data-tilt>
-          <div class="flag-placeholder">🇨🇦 Flag</div>
-          <h3>Country Name</h3>
-          <span class="category-badge">Travel</span>
-          <p>Description of the exhibition goes here.</p>
-        </div>
-      </div>
-      <div class="arrow arrow-right" id="scrollRight">→</div>
+  <section id="exhibitors" class="container">
+    <h2 class="section-title animate-title">Meet the Exhibitors</h2>
+    <div class="section-sub animate-title">Countries · Study Abroad · Travel</div>
+    <div style="display:flex; gap:1rem;">
+      <button class="carousel-arrow" id="exhibitorPrev">‹</button>
+      <button class="carousel-arrow" id="exhibitorNext">›</button>
     </div>
+    <div class="exhibitor-carousel" id="exhibitorCarousel">
+      <!-- 6 placeholder cards with tilt -->
+      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🏳️</div><h3>France</h3><span class="badge" style="background:var(--light-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Study Abroad</span><p>Short description of this exhibitor goes here.</p></div>
+      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🏴</div><h3>Germany</h3><span class="badge" style="background:var(--deep-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Country Showcase</span><p>Short description of this exhibitor goes here.</p></div>
+      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇯🇵</div><h3>Japan</h3><span class="badge" style="background:var(--teal); color:white; padding:0.2rem 1rem; border-radius:40px;">Travel Expo</span><p>Short description of this exhibitor goes here.</p></div>
+      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇨🇦</div><h3>Canada</h3><span class="badge" style="background:var(--crimson); color:white; padding:0.2rem 1rem; border-radius:40px;">Study Abroad</span><p>Short description of this exhibitor goes here.</p></div>
+      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇦🇺</div><h3>Australia</h3><span class="badge" style="background:var(--light-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Country Showcase</span><p>Short description of this exhibitor goes here.</p></div>
+      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇮🇹</div><h3>Italy</h3><span class="badge" style="background:var(--deep-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Travel Expo</span><p>Short description of this exhibitor goes here.</p></div>
+    </div>
+    <!-- TODO: Replace card content with real exhibitor data -->
   </section>
 
-  <!-- CONFERENCES -->
-  <section class="conferences" id="conferences">
-    <h2 class="section-title">Conferences & Talks</h2>
-    <div class="speaker-grid">
-      <!-- 4 speaker cards with staggered fade-up (IntersectionObserver) -->
-      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
-      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
-      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
-      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
+  <!-- CONFERENCES grid 4 cards -->
+  <section id="conferences" class="container">
+    <h2 class="section-title animate-title">Conferences & Talks</h2>
+    <div class="stagger-grid" style="grid-template-columns:repeat(auto-fit, minmax(250px,1fr));">
+      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>Dr. Sarah Chen</h3><p style="color:var(--deep-purple);">Future of Global Education</p><p style="color:var(--teal);">Oct 12 · 10:00</p><p>Brief speaker bio placeholder.</p></div>
+      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>James Mwangi</h3><p style="color:var(--deep-purple);">Tech Hubs in Africa</p><p style="color:var(--teal);">Oct 12 · 14:00</p><p>Brief speaker bio placeholder.</p></div>
+      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>Elena Petrova</h3><p style="color:var(--deep-purple);">Cultural Diplomacy</p><p style="color:var(--teal);">Oct 13 · 11:30</p><p>Brief speaker bio placeholder.</p></div>
+      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>Carlos Mendez</h3><p style="color:var(--deep-purple);">Study Abroad Trends</p><p style="color:var(--teal);">Oct 13 · 16:00</p><p>Brief speaker bio placeholder.</p></div>
     </div>
+    <!-- TODO: Replace with real speaker info -->
   </section>
 
   <!-- NETWORKING SPACE -->
-  <section class="networking" id="networking">
-    <h2 class="section-title">Networking Space</h2>
-    <div class="section-subtitle">Where students meet industry experts</div>
-    <div class="dots-container">
-      <canvas id="networkCanvas"></canvas>
+  <section id="networking" class="container">
+    <h2 class="section-title animate-title">Networking Space</h2>
+    <div class="section-sub animate-title">Where students meet global experts</div>
+    <div class="network-dots">
+      <div class="dot-group"><div class="dot">👥</div><span>Students</span></div>
+      <div class="connector-line"></div>
+      <div class="dot-group"><div class="dot">🧠</div><span>Experts</span></div>
     </div>
-    <div class="experts-preview">
-      <div class="expert-card"><div class="expert-photo">Photo</div><div>Expert Name</div><div>Field / Company</div></div>
-      <div class="expert-card"><div class="expert-photo">Photo</div><div>Expert Name</div><div>Field / Company</div></div>
-      <div class="expert-card"><div class="expert-photo">Photo</div><div>Expert Name</div><div>Field / Company</div></div>
+    <div style="display:flex; gap:2rem; justify-content:center; flex-wrap:wrap;">
+      <div style="text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:var(--gradient); margin-bottom:0.5rem;"></div><p><strong>Dr. Adams</strong><br>Education</p></div>
+      <div style="text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:var(--gradient); margin-bottom:0.5rem;"></div><p><strong>Prof. Bouchard</strong><br>Tech</p></div>
+      <div style="text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:var(--gradient); margin-bottom:0.5rem;"></div><p><strong>Ms. Rivera</strong><br>NGO</p></div>
     </div>
-    <p>Join our exclusive networking sessions and connect with professionals who have lived and worked abroad.</p>
-    <a href="#register" class="cta-btn" style="margin-top:2rem;">Reserve Your Spot</a>
+    <div style="text-align:center; margin-top:2rem;"><a href="#" class="btn btn-primary">Reserve Your Spot</a></div>
+    <!-- TODO: Replace with real expert profiles -->
   </section>
 
   <!-- QUIZ & GIVEAWAY -->
-  <section class="quiz" id="quiz">
-    <h2 class="section-title">Quiz & Win</h2>
-    <div class="section-subtitle" style="color: #eee;">Test your knowledge and enter the giveaway</div>
-    <div class="prize-icon">🏆</div>
-    <p style="font-size:1.4rem;">Answer questions about world cultures and studying abroad — winners get exclusive prizes!</p>
-    <a href="#" class="cta-btn" style="background:white; color:var(--purple); margin-top:2rem;">Join the Quiz</a>
+  <section id="quiz" class="container">
+    <h2 class="section-title animate-title">Quiz & Win</h2>
+    <div class="section-sub animate-title">Answer. Learn. Win.</div>
+    <p style="font-size:1.3rem; margin-bottom:1rem;">Test your global knowledge and stand a chance to win travel vouchers, gadgets, and more!</p>
+    <div style="font-size:5rem; animation:pulse 1.5s infinite;">🏆</div>
+    <a href="#" class="btn btn-primary" style="margin-top:2rem; display:inline-block;">Join the Quiz</a>
+    <!-- TODO: Link button to actual quiz platform -->
   </section>
 
   <!-- REGISTRATION -->
-  <section class="registration" id="register">
-    <h2 class="section-title">Register Now</h2>
-    <div class="tabs">
-      <div class="tab active" data-tab="conf">Conference</div>
-      <div class="tab" data-tab="network">Networking Space</div>
+  <section id="registration" class="container">
+    <h2 class="section-title animate-title">Register Now</h2>
+    <div class="tab-bar">
+      <button class="tab active" id="tabConference">📋 Conference</button>
+      <button class="tab" id="tabNetworking">🤝 Networking Space</button>
     </div>
-    <div class="form-panel active" id="confPanel">
-      <form>
-        <div class="form-group"><input type="text" placeholder="Full Name" required></div>
-        <div class="form-group"><input type="email" placeholder="Email Address" required></div>
-        <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
-        <div class="form-group"><input type="text" placeholder="University / Institution" required></div>
-        <div class="form-group"><select><option>Select session (dropdown placeholder)</option></select></div>
-        <button class="submit-btn">Submit</button>
-        <div class="footnote">* All fields are required</div>
+    <div class="form-panel" id="formPanel">
+      <!-- conference form (visible by default) -->
+      <form id="conferenceForm" style="display:block;">
+        <input type="text" placeholder="Full Name" value=""><!-- TODO: real integration -->
+        <input type="email" placeholder="Email Address">
+        <input type="tel" placeholder="Phone Number">
+        <input type="text" placeholder="University / Institution">
+        <select><option>Session option 1</option><option>Session option 2</option></select>
+        <button class="btn btn-primary" type="submit">Submit</button>
       </form>
-    </div>
-    <div class="form-panel" id="networkPanel">
-      <form>
-        <div class="form-group"><input type="text" placeholder="Full Name" required></div>
-        <div class="form-group"><input type="email" placeholder="Email Address" required></div>
-        <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
-        <div class="form-group"><input type="text" placeholder="University / Institution" required></div>
-        <div class="form-group"><select><option>Select session (dropdown placeholder)</option></select></div>
-        <button class="submit-btn">Submit</button>
-        <div class="footnote">* All fields are required</div>
+      <!-- networking form (hidden) -->
+      <form id="networkingForm" style="display:none;">
+        <input type="text" placeholder="Full Name">
+        <input type="email" placeholder="Email Address">
+        <input type="tel" placeholder="Phone Number">
+        <input type="text" placeholder="University / Institution">
+        <select><option>Networking slot A</option><option>Networking slot B</option></select>
+        <button class="btn btn-primary" type="submit">Submit</button>
       </form>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer>
-    <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
-    <img src="Picture1.png" alt="World Summit Logo" class="footer-logo">
-    <div>World Summit – 2nd Edition<br>contact@worldsummit.com</div>
-    <div class="social-icons">
-      <a href="#">📘</a><a href="#">🐦</a><a href="#">📸</a>
+  <footer class="footer">
+    <div class="footer-logo">
+      <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'logo-fallback\'>WORLD SUMMIT</div>';">
     </div>
-    <div>© 2025 World Summit. All rights reserved.</div>
+    <p style="font-size:1.5rem; font-family:var(--font-display);">World Summit – 2nd Edition</p>
+    <div class="social-icons">
+      <a href="#">🔗</a> <a href="#">📘</a> <a href="#">📸</a>
+    </div>
+    <p><!-- TODO: Replace with real email -->Contact: contact@worldsummit.com</p>
+    <p style="margin-top:1rem;">© 2025 World Summit. All rights reserved.</p>
   </footer>
 
   <script>
     (function() {
-      // ----- Navbar shrink on scroll -----
+      // NAVBAR SHRINK
       const navbar = document.getElementById('navbar');
       window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) navbar.classList.add('shrink');
+        if (window.scrollY > 80) navbar.classList.add('shrink');
         else navbar.classList.remove('shrink');
       });
 
-      // ----- Mobile menu -----
-      const hamburger = document.getElementById('hamburger');
-      const mobileMenu = document.getElementById('mobileMenu');
-      const closeMenu = document.getElementById('closeMenu');
-      hamburger.addEventListener('click', () => mobileMenu.classList.add('active'));
-      closeMenu.addEventListener('click', () => mobileMenu.classList.remove('active'));
-      mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.remove('active')));
-
-      // ----- Hero parallax (mouse move) -----
-      const worldBg = document.getElementById('worldBg');
-      document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 20;
-        const y = (e.clientY / window.innerHeight - 0.5) * 10;
-        worldBg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+      // PROGRESS BAR
+      const progressBar = document.getElementById('progress-bar');
+      window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + '%';
       });
 
-      // ----- 3D tilt on exhibitor cards -----
+      // INTERSECTION OBSERVER (fade-slide + stagger)
+      const faders = document.querySelectorAll('.animate-title, .fade-slide');
+      const staggerGrids = document.querySelectorAll('.stagger-grid');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.2 });
+      faders.forEach(el => observer.observe(el));
+      staggerGrids.forEach(grid => observer.observe(grid));
+
+      // ACTIVE NAV LINK (using same observer on sections)
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            navLinks.forEach(link => {
+              link.classList.remove('active');
+              if (link.getAttribute('href') === '#' + id) link.classList.add('active');
+            });
+          }
+        });
+      }, { threshold: 0.5 });
+      sections.forEach(s => sectionObserver.observe(s));
+
+      // COUNTER (stats) – create mini stats if not present. Add counters quickly
+      const statSection = document.createElement('div');
+      statSection.className = 'container fade-slide';
+      statSection.style.display = 'flex';
+      statSection.style.justifyContent = 'space-around';
+      statSection.style.margin = '2rem auto';
+      statSection.innerHTML = `
+        <div><span class="stat-num" data-target="50">0</span>+ Countries</div>
+        <div><span class="stat-num" data-target="200">0</span>+ Speakers</div>
+        <div><span class="stat-num" data-target="3000">0</span>+ Attendees</div>
+      `;
+      document.getElementById('sponsors').before(statSection);
+      observer.observe(statSection);
+
+      // counter function
+      const statNumbers = document.querySelectorAll('.stat-num');
+      let counted = false;
+      function startCounters() {
+        if (counted) return;
+        statNumbers.forEach(el => {
+          const target = parseInt(el.getAttribute('data-target'));
+          let current = 0;
+          const inc = target / 50;
+          const timer = setInterval(() => {
+            current += inc;
+            if (current >= target) {
+              el.innerText = target;
+              clearInterval(timer);
+            } else {
+              el.innerText = Math.floor(current);
+            }
+          }, 20);
+        });
+        counted = true;
+      }
+      // trigger when statSection visible
+      const statObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) startCounters(); });
+      }, { threshold: 0.5 });
+      statObserver.observe(statSection);
+
+      // PARALLAX ORBS
+      const hero = document.querySelector('.hero');
+      const orbs = document.querySelectorAll('.orb');
+      hero.addEventListener('mousemove', (e) => {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        orbs[0].style.transform = `translate(${x * 30}px, ${y * 30}px)`;
+        orbs[1].style.transform = `translate(${-x * 30}px, ${-y * 30}px)`;
+      });
+
+      // SPONSOR MARQUEE pause on hover
+      const marquee = document.querySelector('.marquee-container');
+      marquee.addEventListener('mouseenter', () => marquee.classList.add('paused'));
+      marquee.addEventListener('mouseleave', () => marquee.classList.remove('paused'));
+
+      // EXHIBITOR CAROUSEL arrows
+      const carousel = document.getElementById('exhibitorCarousel');
+      document.getElementById('exhibitorPrev').addEventListener('click', () => carousel.scrollBy({ left: -300, behavior: 'smooth' }));
+      document.getElementById('exhibitorNext').addEventListener('click', () => carousel.scrollBy({ left: 300, behavior: 'smooth' }));
+
+      // CARD TILT
       const tiltCards = document.querySelectorAll('[data-tilt]');
       tiltCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
@@ -788,114 +827,45 @@
           const y = e.clientY - rect.top;
           const centerX = rect.width / 2;
           const centerY = rect.height / 2;
-          const rotateX = (y - centerY) / 10;
-          const rotateY = (centerX - x) / 10;
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+          const rotateX = (y - centerY) / 15;
+          const rotateY = (centerX - x) / 15;
+          card.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
         });
         card.addEventListener('mouseleave', () => {
-          card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+          card.style.transform = '';
         });
       });
 
-      // ----- Horizontal scroll arrows for exhibitors -----
-      const wrapper = document.getElementById('exhibitorWrapper');
-      document.getElementById('scrollLeft').addEventListener('click', () => wrapper.scrollBy({ left: -300, behavior: 'smooth' }));
-      document.getElementById('scrollRight').addEventListener('click', () => wrapper.scrollBy({ left: 300, behavior: 'smooth' }));
-
-      // ----- IntersectionObserver for fade-up (speaker cards) -----
-      const speakerCards = document.querySelectorAll('.speaker-card');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry, idx) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => entry.target.classList.add('show'), idx * 100);
-          }
-        });
-      }, { threshold: 0.2 });
-      speakerCards.forEach(card => observer.observe(card));
-
-      // ----- Networking canvas (connecting dots) -----
-      const canvas = document.getElementById('networkCanvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        function resize() {
-          width = canvas.clientWidth; height = canvas.clientHeight;
-          canvas.width = width; canvas.height = height;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        const students = [{x:0.2},{x:0.25},{x:0.15},{x:0.22}];
-        const experts = [{x:0.8},{x:0.85},{x:0.75},{x:0.82}];
-        function initPositions() {
-          students.forEach((p,i) => { p.y = 0.3 + i*0.15; p.baseY = p.y; });
-          experts.forEach((p,i) => { p.y = 0.3 + i*0.15; p.baseY = p.y; });
-        }
-        initPositions();
-
-        function draw() {
-          ctx.clearRect(0,0,width,height);
-          // draw nodes
-          ctx.fillStyle = '#C8102E';
-          students.forEach(s => { ctx.beginPath(); ctx.arc(s.x*width, s.y*height, 8, 0, 2*Math.PI); ctx.fill(); });
-          ctx.fillStyle = '#1A5276';
-          experts.forEach(e => { ctx.beginPath(); ctx.arc(e.x*width, e.y*height, 8, 0, 2*Math.PI); ctx.fill(); });
-          // draw lines
-          ctx.strokeStyle = '#6B3FA0';
-          ctx.lineWidth = 2;
-          students.forEach(s => {
-            experts.forEach(e => {
-              ctx.beginPath();
-              ctx.moveTo(s.x*width, s.y*height);
-              ctx.lineTo(e.x*width, e.y*height);
-              ctx.strokeStyle = 'rgba(107,63,160,0.3)';
-              ctx.stroke();
-            });
-          });
-          requestAnimationFrame(draw);
-        }
-        draw();
-
-        // simple animation: float nodes
-        let time = 0;
-        function animateNodes() {
-          time += 0.02;
-          students.forEach((p,i) => { p.y = p.baseY + Math.sin(time + i)*0.05; });
-          experts.forEach((p,i) => { p.y = p.baseY + Math.cos(time + i)*0.05; });
-          requestAnimationFrame(animateNodes);
-        }
-        animateNodes();
-      }
-
-      // ----- Registration tabs -----
-      const tabs = document.querySelectorAll('.tab');
-      const panels = {
-        conf: document.getElementById('confPanel'),
-        network: document.getElementById('networkPanel')
-      };
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          const which = tab.dataset.tab;
-          panels.conf.classList.remove('active');
-          panels.network.classList.remove('active');
-          if (which === 'conf') panels.conf.classList.add('active');
-          else panels.network.classList.add('active');
-        });
+      // TAB SWITCH (registration)
+      const tabConf = document.getElementById('tabConference');
+      const tabNet = document.getElementById('tabNetworking');
+      const confForm = document.getElementById('conferenceForm');
+      const netForm = document.getElementById('networkingForm');
+      const panel = document.getElementById('formPanel');
+      tabConf.addEventListener('click', () => {
+        tabConf.classList.add('active');
+        tabNet.classList.remove('active');
+        confForm.style.display = 'block';
+        netForm.style.display = 'none';
+      });
+      tabNet.addEventListener('click', () => {
+        tabNet.classList.add('active');
+        tabConf.classList.remove('active');
+        confForm.style.display = 'none';
+        netForm.style.display = 'block';
       });
 
-      // ----- Smooth scroll for anchor links -----
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) target.scrollIntoView({ behavior: 'smooth' });
-        });
-      });
+      // smooth height transition (simple example: panel height changes)
+      // set height automatically via transition (already using overflow hidden + block/none)
     })();
   </script>
-  <!-- TODO: Replace all placeholder texts and images with real content -->
-  <!-- REMINDER: Replace 'YOUR_LOGO_HERE.png' with actual logo path -->
+  <!-- additional TODO comments as requested -->
+  <!-- TODO: Replace dropdown options with real sessions -->
+  <!-- TODO: Replace sponsor boxes with actual logos -->
+  <!-- TODO: Replace card content with real exhibitor data -->
+  <!-- TODO: Replace with real speaker info -->
+  <!-- TODO: Replace with real expert profiles -->
+  <!-- TODO: Link button to actual quiz platform -->
+  <!-- TODO: Replace with real email -->
 </body>
 </html>
