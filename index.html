@@ -3,56 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World Summit · 2nd Edition</title>
-  <!-- Google Fonts: Playfair Display + DM Sans -->
+  <title>World Summit – 2nd Edition</title>
+  <!-- Google Fonts: Oxanium & Sora -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Three.js core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
-    /* ----- CSS RESET & VARIABLES ----- */
+    /* ----- CSS VARIABLES (exact colors) ----- */
+    :root {
+      --bg-main: #F7F5FB;
+      --bg-section: #FFFFFF;
+      --crimson: #C8102E;
+      --purple: #5B2D8E;
+      --teal: #1B4F72;
+      --light-purple: #8E5BB5;
+      --muted: #7B6E8A;
+      --text: #1A0A2E;
+      --gradient: linear-gradient(135deg, #C8102E 0%, #8E2D8E 50%, #1B4F72 100%);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    :root {
-      --bg-white: #FFFFFF;
-      --bg-light: #F5F3F7;
-      --crimson: #C8102E;
-      --deep-purple: #5B2D8E;
-      --teal: #1B4F72;
-      --light-purple: #8E5BB5;
-      --muted: #7B6E8A;
-      --gradient: linear-gradient(135deg, #C8102E, #8E2D8E, #1B4F72);
-      --font-display: 'Playfair Display', serif;
-      --font-body: 'DM Sans', sans-serif;
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      background-color: var(--bg-white);
-      color: #2a2a2a;
-      font-family: var(--font-body);
+      background-color: var(--bg-main);
+      font-family: 'Sora', sans-serif;
+      color: var(--text);
       line-height: 1.5;
       overflow-x: hidden;
     }
 
-    /* custom scrollbar with gradient */
-    ::-webkit-scrollbar {
-      width: 12px;
-    }
-    ::-webkit-scrollbar-track {
-      background: var(--bg-light);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--gradient);
-      border-radius: 6px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--light-purple);
+    /* canvas fixed background */
+    #globe-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none; /* allow mouse events to pass through */
+      display: block;
     }
 
-    /* progress bar */
+    /* progress bar (fixed top) */
     #progress-bar {
       position: fixed;
       top: 0;
@@ -61,7 +63,7 @@
       width: 0%;
       background: var(--gradient);
       z-index: 1001;
-      transition: width 0.1s ease;
+      transition: width 0.1s linear; /* small visual help, but width set by js */
     }
 
     /* navigation */
@@ -69,69 +71,66 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(8px);
-      padding: 1rem 2rem;
+      background: rgba(247, 245, 251, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 1.2rem 5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 1000;
-      transition: padding 0.3s, box-shadow 0.3s, background 0.3s;
+      transition: all 0.4s ease; /* used for shrink effect */
       border-bottom: 1px solid rgba(0,0,0,0.03);
     }
     .navbar.shrink {
-      padding: 0.5rem 2rem;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-      background: rgba(255,255,255,0.97);
+      padding: 0.6rem 5rem !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.95);
     }
-    .nav-logo {
-      width: 50px;
-      height: 50px;
+    .nav-brand {
+      display: flex;
+      align-items: center;
     }
     .logo-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      height: 48px;
+      width: auto;
       border-radius: 50%;
-      background: var(--gradient);
-      padding: 2px;
     }
     .logo-fallback {
-      width: 50px;
-      height: 50px;
+      height: 48px;
+      width: 48px;
       border-radius: 50%;
       background: var(--gradient);
       color: white;
-      font-size: 0.6rem;
-      font-weight: bold;
-      display: flex;
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      display: none;
       align-items: center;
       justify-content: center;
       text-align: center;
       line-height: 1.2;
-      padding: 4px;
     }
     .nav-links {
       display: flex;
-      gap: 2rem;
+      gap: 2.2rem;
       list-style: none;
     }
     .nav-links a {
       text-decoration: none;
-      font-weight: 500;
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 600;
       color: var(--teal);
-      position: relative;
-      font-family: var(--font-body);
       transition: color 0.2s;
+      position: relative;
+      padding-bottom: 4px;
     }
     .nav-links a.active {
       color: var(--crimson);
-      font-weight: 600;
     }
     .nav-links a.active::after {
       content: '';
       position: absolute;
-      bottom: -6px;
+      bottom: 0;
       left: 0;
       width: 100%;
       height: 2px;
@@ -140,78 +139,54 @@
     }
     .hamburger {
       display: none;
-      font-size: 2rem;
+      font-size: 2.5rem;
       cursor: pointer;
       color: var(--teal);
     }
-    #menu-toggle {
-      display: none;
-    }
+    #menu-toggle { display: none; }
 
     /* sections general */
     section {
       padding: 6rem 2rem;
       position: relative;
+      background-color: transparent; /* default transparent so globe visible */
+    }
+    .section-white {
+      background-color: var(--bg-section);
     }
     .container {
       max-width: 1200px;
       margin: 0 auto;
+      position: relative;
     }
     .section-title {
-      font-family: var(--font-display);
-      font-size: 3rem;
+      font-family: 'Oxanium', sans-serif;
+      font-size: 3.5rem;
       font-weight: 800;
-      margin-bottom: 1rem;
       color: var(--crimson);
+      margin-bottom: 1rem;
     }
     .section-sub {
-      color: var(--deep-purple);
+      font-family: 'Oxanium', sans-serif;
+      color: var(--purple);
       font-weight: 600;
-      letter-spacing: 1px;
       text-transform: uppercase;
-      margin-bottom: 2rem;
-    }
-    .divider-wave {
-      margin-top: -2rem;
-      margin-bottom: 0;
-      line-height: 0;
-    }
-    .divider-wave svg {
-      display: block;
-      width: 100%;
-      height: 50px;
-      fill: var(--bg-light);
+      letter-spacing: 1.5px;
+      margin-bottom: 2.5rem;
     }
 
-    /* fade-slide-up animation */
-    .animate-title, .fade-slide {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    /* divider wave */
+    .wave-divider {
+      display: block;
+      width: 100%;
+      height: 60px;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath fill='%23FFFFFF' d='M0,32L120,42.7C240,53,480,75,720,80C960,85,1200,75,1320,69.3L1440,64L1440,120L1320,120C1200,120,960,120,720,120C480,120,240,120,120,120L0,120Z' /%3E%3C/svg%3E");
     }
-    .animate-title.visible, .fade-slide.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .wave-divider.flip {
+      transform: rotate(180deg);
     }
-    .stagger-grid {
-      display: grid;
-      gap: 2rem;
-    }
-    .stagger-item {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .stagger-grid.visible .stagger-item {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .stagger-grid.visible .stagger-item:nth-child(1) { transition-delay: 0.1s; }
-    .stagger-grid.visible .stagger-item:nth-child(2) { transition-delay: 0.25s; }
-    .stagger-grid.visible .stagger-item:nth-child(3) { transition-delay: 0.4s; }
-    .stagger-grid.visible .stagger-item:nth-child(4) { transition-delay: 0.55s; }
-    .stagger-grid.visible .stagger-item:nth-child(5) { transition-delay: 0.7s; }
-    .stagger-grid.visible .stagger-item:nth-child(6) { transition-delay: 0.85s; }
 
     /* hero */
     .hero {
@@ -220,212 +195,216 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      background: linear-gradient(145deg, #fff, #F0EBF8, #EBF2F8);
-      position: relative;
-      overflow: hidden;
-      padding-top: 80px;
+      background: radial-gradient(ellipse at center, rgba(247,245,251,0.7) 0%, transparent 80%);
     }
-    .world-map-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" opacity="0.06"><path fill="%235B2D8E" d="M305.5 200.2l-4-8 5-4 9 1 3 8-6 7-7-4zm105 30l-5-10 9-7 12 2 4 12-9 7-11-4zm-210-70l-7-8 6-10 13-3 9 8-4 12-11 4-6-3zM550 310l-9-13 8-12 16-2 8 11-6 14-12 5-5-3z"/></svg>');
-      background-repeat: repeat;
-      background-size: 600px;
-      pointer-events: none;
+    .hero-content {
+      max-width: 1000px;
+      padding: 2rem;
     }
     .hero-logo {
-      width: 140px;
-      height: 140px;
-      margin: 0 auto 1.5rem;
+      margin-bottom: 1.5rem;
     }
     .hero-logo .logo-img {
-      width: 140px;
-      height: 140px;
+      height: 130px;
     }
     .hero-logo .logo-fallback {
-      width: 140px;
-      height: 140px;
+      height: 130px;
+      width: 130px;
       font-size: 1.2rem;
     }
-    .hero h1 {
-      font-family: var(--font-display);
-      font-size: 5rem;
-      font-weight: 900;
-      line-height: 1.1;
-    }
-    .hero-word-world {
-      color: var(--crimson);
-    }
-    .hero-word-summit {
-      color: var(--teal);
-    }
-    .edition-badge {
-      background: var(--deep-purple);
-      color: white;
+    .badge {
       display: inline-block;
-      padding: 0.3rem 1.5rem;
+      padding: 0.3rem 1.8rem;
+      border: 2px solid transparent;
+      border-image: var(--gradient);
+      border-image-slice: 1;
       border-radius: 40px;
+      font-family: 'Oxanium', sans-serif;
       font-weight: 600;
-      margin: 1rem 0 0.5rem;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(2px);
+      margin-bottom: 1.5rem;
     }
+    .hero-title {
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 800;
+      font-size: clamp(4rem, 10vw, 8rem);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .hero-word-crimson { color: var(--crimson); }
+    .hero-word-teal { color: var(--teal); }
     .slogan {
-      font-size: 1.4rem;
-      color: var(--deep-purple);
-      font-weight: 400;
-    }
-    .date-place {
+      font-size: 1.3rem;
       color: var(--muted);
-      margin: 1rem 0 2rem;
+      margin-bottom: 1rem;
     }
-    .btn-group {
+    .meta-pills {
       display: flex;
       gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
+      margin: 1.5rem 0 2rem;
+    }
+    .pill {
+      background: var(--teal);
+      color: white;
+      padding: 0.4rem 1.8rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
     .btn {
-      padding: 0.9rem 2.5rem;
-      border-radius: 40px;
+      padding: 0.9rem 2.8rem;
+      border-radius: 60px;
+      font-family: 'Sora', sans-serif;
       font-weight: 600;
       text-decoration: none;
-      transition: all 0.3s;
-      border: 2px solid transparent;
+      transition: 0.3s;
+      border: none;
       cursor: pointer;
-      font-family: var(--font-body);
+      font-size: 1rem;
     }
     .btn-primary {
       background: var(--gradient);
       color: white;
+      box-shadow: 0 8px 20px rgba(200,16,46,0.3);
     }
     .btn-primary:hover {
-      background: var(--light-purple);
-      border-color: var(--teal);
-      transform: scale(1.05);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(200,16,46,0.4);
     }
     .btn-outline {
-      border: 2px solid var(--teal);
-      color: var(--teal);
       background: transparent;
+      border: 2px solid var(--purple);
+      color: var(--purple);
     }
     .btn-outline:hover {
-      background: var(--teal);
+      background: var(--purple);
       color: white;
     }
-    .scroll-indicator {
+    .scroll-arrow {
       position: absolute;
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 2rem;
-      color: var(--deep-purple);
+      font-size: 2.5rem;
+      color: var(--purple);
       animation: bounce 2s infinite;
     }
     @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0);} 40%{transform:translateX(-50%) translateY(-20px);} 60%{transform:translateX(-50%) translateY(-10px);} }
 
-    /* orbs parallax */
-    .orb {
-      position: absolute;
-      width: 250px;
-      height: 250px;
-      background: radial-gradient(circle at 30% 30%, rgba(200,16,46,0.2), rgba(91,45,142,0.2), rgba(27,79,114,0.2));
-      filter: blur(50px);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-      transition: transform 0.1s;
-    }
-    .orb1 { top: 10%; left: 5%; }
-    .orb2 { bottom: 10%; right: 5%; width: 300px; height: 300px; }
-
-    /* sponsors marquee */
-    .marquee-container {
+    /* sponsor marquee rows */
+    .marquee-row {
       overflow: hidden;
-      white-space: nowrap;
-      background: var(--bg-light);
-      padding: 2rem 0;
-      border-radius: 60px;
+      background: transparent;
+      margin: 1.5rem 0;
+      padding: 0.5rem 0;
     }
     .marquee-track {
-      display: inline-flex;
-      gap: 3rem;
-      animation: scrollMarquee 30s linear infinite;
-    }
-    .marquee-container.paused .marquee-track {
-      animation-play-state: paused;
+      display: flex;
+      gap: 2rem;
+      width: fit-content;
+      will-change: transform;
     }
     .sponsor-box {
-      width: 160px;
+      width: 180px;
       height: 100px;
-      border: 2px dashed var(--light-purple);
-      background: white;
-      display: inline-flex;
+      border: 1px solid #E0D8F0;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
-      color: var(--teal);
-      border-radius: 20px;
-    }
-    @keyframes scrollMarquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      color: var(--muted);
+      font-family: 'Sora', sans-serif;
+      flex-shrink: 0;
     }
 
-    /* exhibitors carousel & tilt */
-    .exhibitor-carousel {
+    /* exhibitors */
+    .exhibitor-grid {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.8rem;
       overflow-x: auto;
-      scroll-behavior: smooth;
       padding: 1rem 0;
       scrollbar-width: none;
     }
-    .exhibitor-carousel::-webkit-scrollbar { display: none; }
+    .exhibitor-grid::-webkit-scrollbar { display: none; }
     .exhibitor-card {
       flex: 0 0 280px;
-      background: white;
+      background: var(--bg-section);
       border-radius: 24px;
       padding: 1.5rem;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-      border: 1px solid var(--bg-light);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+      border-top: 4px solid transparent;
+      border-image: var(--gradient);
+      border-image-slice: 1;
       transition: box-shadow 0.2s;
       transform-style: preserve-3d;
-      will-change: transform;
     }
     .exhibitor-card .flag-placeholder {
       width: 100%;
-      height: 120px;
+      height: 130px;
       background: var(--gradient);
-      border-radius: 16px;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 3rem;
       margin-bottom: 1rem;
+      opacity: 0.8;
     }
-    .carousel-arrow {
-      background: var(--gradient);
+    .category-badge {
+      background: var(--light-purple);
       color: white;
-      border: none;
-      width: 48px;
-      height: 48px;
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin: 0.5rem 0;
+    }
+
+    /* conference cards */
+    .conf-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+    .conf-card {
+      background: var(--bg-main);
+      border-radius: 32px;
+      padding: 1.8rem;
+      border-top: 4px solid transparent;
+      border-image: var(--gradient);
+      border-image-slice: 1;
+    }
+    .speaker-img {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      font-size: 2rem;
-      cursor: pointer;
-      margin: 1rem 0.5rem 0 0;
+      background: var(--gradient);
+      margin-bottom: 1rem;
     }
 
     /* networking dots */
-    .network-dots {
+    .network-visual {
       display: flex;
-      justify-content: space-around;
       align-items: center;
+      justify-content: space-between;
       margin: 3rem 0;
-      position: relative;
     }
-    .dot-group {
+    .dot-cluster {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       text-align: center;
     }
     .dot {
@@ -433,48 +412,86 @@
       height: 60px;
       border-radius: 50%;
       background: var(--gradient);
-      margin: 0 auto 0.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: bold;
     }
-    .connector-line {
+    .line-cluster {
       flex: 1;
       height: 2px;
-      background: linear-gradient(90deg, var(--light-purple), var(--teal));
+      background: linear-gradient(90deg, var(--crimson), var(--purple));
+      margin: 0 1rem;
       position: relative;
-      animation: pulseLine 2s infinite;
+      animation: pulseDash 2s infinite;
     }
-    @keyframes pulseLine { 0%{opacity:0.3} 50%{opacity:1} }
+    @keyframes pulseDash { 0%{opacity:0.3} 50%{opacity:1} }
+    .expert-cards {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .expert-card {
+      text-align: center;
+    }
+    .expert-card .circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--gradient);
+      margin-bottom: 0.5rem;
+    }
 
-    /* tabs registration */
+    /* quiz prizes */
+    .prize-grid {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .prize-card {
+      background: var(--bg-section);
+      padding: 1.5rem;
+      border-radius: 24px;
+      border: 1px solid var(--light-purple);
+    }
+    .trophy {
+      font-size: 4rem;
+      animation: pulse 1.5s infinite;
+      color: #FFD700;
+    }
+    @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+    /* registration tabs */
     .tab-bar {
       display: flex;
       gap: 1rem;
       margin-bottom: 2rem;
     }
     .tab {
-      padding: 0.8rem 2rem;
-      background: var(--bg-light);
-      border: none;
+      padding: 0.9rem 2.5rem;
+      background: var(--bg-section);
+      border: 2px solid var(--purple);
+      font-family: 'Oxanium', sans-serif;
       font-weight: 600;
-      color: var(--teal);
-      border-radius: 40px;
+      color: var(--purple);
+      border-radius: 60px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.3s;
     }
     .tab.active {
       background: var(--gradient);
+      border-color: transparent;
       color: white;
     }
     .form-panel {
-      background: var(--bg-light);
+      background: var(--bg-section);
+      border-radius: 40px;
       padding: 2rem;
-      border-radius: 32px;
       overflow: hidden;
-      transition: height 0.4s ease;
+      transition: height 0.4s ease; /* will be controlled by JS but fallback */
     }
     .form-panel form {
       display: flex;
@@ -482,10 +499,10 @@
       gap: 1.2rem;
     }
     .form-panel input, .form-panel select {
-      padding: 1rem;
+      padding: 1rem 1.5rem;
       border: 1px solid #ddd;
       border-radius: 60px;
-      font-family: var(--font-body);
+      font-family: 'Sora', sans-serif;
     }
 
     /* footer */
@@ -494,31 +511,39 @@
       color: white;
       padding: 3rem 2rem;
       text-align: center;
+      border-top: 4px solid transparent;
+      border-image: var(--gradient);
+      border-image-slice: 1;
     }
     .footer-logo {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto 1rem;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
     }
+    .footer-logo .logo-img { height: 60px; }
+    .footer-logo .logo-fallback { height: 60px; width: 60px; font-size: 0.8rem; }
     .social-icons a {
       color: white;
-      margin: 0 0.5rem;
       font-size: 1.8rem;
+      margin: 0 0.5rem;
       text-decoration: none;
     }
+    .footer p { margin: 0.5rem 0; }
 
-    /* responsive */
+    /* mobile responsive */
     @media (max-width: 768px) {
+      .navbar { padding: 1rem 2rem; }
+      .navbar.shrink { padding: 0.5rem 2rem !important; }
       .nav-links {
         display: none;
         flex-direction: column;
         background: white;
         position: absolute;
-        top: 70px;
+        top: 80px;
         right: 2rem;
-        padding: 1.5rem;
+        padding: 2rem;
         border-radius: 20px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       }
       #menu-toggle:checked + .hamburger + .nav-links {
         display: flex;
@@ -526,22 +551,26 @@
       .hamburger {
         display: block;
       }
-      .hero h1 {
-        font-size: 3rem;
-      }
+      .conf-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 3.5rem; }
     }
   </style>
 </head>
 <body>
+  <!-- fixed canvas for three.js -->
+  <canvas id="globe-canvas"></canvas>
+  <!-- progress bar -->
   <div id="progress-bar"></div>
 
   <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
-    <div class="nav-logo">
-      <!-- LOGO: Replace src with your actual logo file path -->
-      <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'logo-fallback\'>WORLD SUMMIT</div>';">
+    <div class="nav-brand">
+      <!-- LOGO: Replace YOUR_LOGO_HERE.png with your actual logo path -->
+      <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback">WORLD<br>SUMMIT</div>
     </div>
-    <input type="checkbox" id="menu-toggle" style="display:none;">
+    <input type="checkbox" id="menu-toggle">
     <label for="menu-toggle" class="hamburger">☰</label>
     <ul class="nav-links">
       <li><a href="#hero" class="nav-link">Home</a></li>
@@ -556,170 +585,426 @@
 
   <!-- HERO -->
   <section id="hero" class="hero">
-    <div class="world-map-bg"></div>
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="container" style="position:relative; z-index:2;">
+    <div class="hero-content">
       <div class="hero-logo">
-        <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'logo-fallback\'>WORLD SUMMIT</div>';">
+        <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="logo-fallback">WORLD<br>SUMMIT</div>
       </div>
-      <h1><span class="hero-word-world">WORLD</span> <span class="hero-word-summit">SUMMIT</span></h1>
-      <div class="edition-badge">2nd Edition</div>
-      <p class="slogan"><!-- TODO: Replace with your slogan -->"Bridging Cultures, Creating Futures"</p>
-      <p class="date-place"><!-- TODO: Replace -->October 12-14, 2025 · Paris, France</p>
+      <div class="badge">2nd Edition</div>
+      <h1 class="hero-title"><span class="hero-word-crimson">WORLD</span><br><span class="hero-word-teal">SUMMIT</span></h1>
+      <p class="slogan"><!-- TODO: Replace with your slogan -->"Connecting Cultures, Shaping Tomorrow"</p>
+      <div class="meta-pills">
+        <span class="pill"><!-- TODO: Replace -->October 12-14, 2025</span>
+        <span class="pill"><!-- TODO: Replace -->Paris, France</span>
+      </div>
       <div class="btn-group">
-        <a href="#" class="btn btn-primary">Register Now</a>
-        <a href="#" class="btn btn-outline">Learn More</a>
+        <a href="#registration" class="btn btn-primary">Register Now</a>
+        <a href="#" class="btn btn-outline">Explore</a>
       </div>
     </div>
-    <div class="scroll-indicator">⌄</div>
+    <div class="scroll-arrow">⌄</div>
   </section>
 
-  <!-- divider wave -->
-  <div class="divider-wave"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0,50 C300,120 600,0 900,40 C1200,80 1440,10 1440,10 L1440,100 L0,100 Z"></path></svg></div>
+  <div class="wave-divider"></div>
 
-  <!-- SPONSORS -->
-  <section id="sponsors" class="container">
-    <h2 class="section-title animate-title">Our Partners & Sponsors</h2>
-    <div class="marquee-container" id="marqueeContainer">
-      <div class="marquee-track" id="marqueeTrack">
-        <!-- 8 placeholder boxes repeated twice for seamless loop -->
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 1</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 2</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 3</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 4</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 5</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 6</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 7</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 8</div>
-        <!-- duplicate -->
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 1</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 2</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 3</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 4</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 5</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 6</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 7</div>
-        <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 8</div>
+  <!-- SPONSORS (white background) -->
+  <section id="sponsors" class="section-white">
+    <div class="container">
+      <h2 class="section-title animate-entry">Our Partners & Sponsors</h2>
+      <!-- marquee row 1 (left to right) -->
+      <div class="marquee-row" id="marquee1">
+        <div class="marquee-track" id="marqueeTrack1">
+          <!-- 8 boxes repeated twice for seamless loop -->
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 1</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 2</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 3</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 4</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 5</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 6</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 7</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 8</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 1</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 2</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 3</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 4</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 5</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 6</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 7</div>
+          <div class="sponsor-box"><!-- TODO: replace logo -->Sponsor 8</div>
+        </div>
+      </div>
+      <!-- marquee row 2 (right to left, using negative direction) -->
+      <div class="marquee-row" id="marquee2">
+        <div class="marquee-track" id="marqueeTrack2">
+          <!-- same 8 boxes -->
+          <div class="sponsor-box">Sponsor A</div><div class="sponsor-box">Sponsor B</div><div class="sponsor-box">Sponsor C</div><div class="sponsor-box">Sponsor D</div>
+          <div class="sponsor-box">Sponsor E</div><div class="sponsor-box">Sponsor F</div><div class="sponsor-box">Sponsor G</div><div class="sponsor-box">Sponsor H</div>
+          <div class="sponsor-box">Sponsor A</div><div class="sponsor-box">Sponsor B</div><div class="sponsor-box">Sponsor C</div><div class="sponsor-box">Sponsor D</div>
+          <div class="sponsor-box">Sponsor E</div><div class="sponsor-box">Sponsor F</div><div class="sponsor-box">Sponsor G</div><div class="sponsor-box">Sponsor H</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- divider -->
-  <div class="divider-wave"><svg viewBox="0 0 1440 100" style="transform:rotate(180deg)"><path d="M0,50 C300,120 600,0 900,40 C1200,80 1440,10 1440,10 L1440,100 L0,100 Z"></path></svg></div>
+  <div class="wave-divider flip"></div>
 
-  <!-- EXHIBITORS -->
-  <section id="exhibitors" class="container">
-    <h2 class="section-title animate-title">Meet the Exhibitors</h2>
-    <div class="section-sub animate-title">Countries · Study Abroad · Travel</div>
-    <div style="display:flex; gap:1rem;">
-      <button class="carousel-arrow" id="exhibitorPrev">‹</button>
-      <button class="carousel-arrow" id="exhibitorNext">›</button>
+  <!-- EXHIBITORS (transparent bg) -->
+  <section id="exhibitors">
+    <div class="container">
+      <h2 class="section-title animate-entry">Meet the Exhibitors</h2>
+      <div class="section-sub animate-entry">Countries · Study Abroad · Travel Experiences</div>
+      <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+        <button class="btn btn-outline" id="exhibitorLeft">←</button>
+        <button class="btn btn-outline" id="exhibitorRight">→</button>
+      </div>
+      <div class="exhibitor-grid" id="exhibitorGrid">
+        <!-- 6 placeholder cards with tilt -->
+        <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🏳️</div><h3 style="color:var(--crimson)">France</h3><span class="category-badge">Study Abroad</span><p>Description of this exhibitor's presence.</p></div>
+        <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🏴</div><h3 style="color:var(--crimson)">Germany</h3><span class="category-badge">Country Showcase</span><p>Description of this exhibitor's presence.</p></div>
+        <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇯🇵</div><h3 style="color:var(--crimson)">Japan</h3><span class="category-badge">Travel Expo</span><p>Description of this exhibitor's presence.</p></div>
+        <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇨🇦</div><h3 style="color:var(--crimson)">Canada</h3><span class="category-badge">Study Abroad</span><p>Description of this exhibitor's presence.</p></div>
+        <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇦🇺</div><h3 style="color:var(--crimson)">Australia</h3><span class="category-badge">Country Showcase</span><p>Description of this exhibitor's presence.</p></div>
+        <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇮🇹</div><h3 style="color:var(--crimson)">Italy</h3><span class="category-badge">Travel Expo</span><p>Description of this exhibitor's presence.</p></div>
+      </div>
+      <!-- TODO: Replace all card content with real exhibitor data -->
     </div>
-    <div class="exhibitor-carousel" id="exhibitorCarousel">
-      <!-- 6 placeholder cards with tilt -->
-      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🏳️</div><h3>France</h3><span class="badge" style="background:var(--light-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Study Abroad</span><p>Short description of this exhibitor goes here.</p></div>
-      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🏴</div><h3>Germany</h3><span class="badge" style="background:var(--deep-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Country Showcase</span><p>Short description of this exhibitor goes here.</p></div>
-      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇯🇵</div><h3>Japan</h3><span class="badge" style="background:var(--teal); color:white; padding:0.2rem 1rem; border-radius:40px;">Travel Expo</span><p>Short description of this exhibitor goes here.</p></div>
-      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇨🇦</div><h3>Canada</h3><span class="badge" style="background:var(--crimson); color:white; padding:0.2rem 1rem; border-radius:40px;">Study Abroad</span><p>Short description of this exhibitor goes here.</p></div>
-      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇦🇺</div><h3>Australia</h3><span class="badge" style="background:var(--light-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Country Showcase</span><p>Short description of this exhibitor goes here.</p></div>
-      <div class="exhibitor-card stagger-item" data-tilt><div class="flag-placeholder">🇮🇹</div><h3>Italy</h3><span class="badge" style="background:var(--deep-purple); color:white; padding:0.2rem 1rem; border-radius:40px;">Travel Expo</span><p>Short description of this exhibitor goes here.</p></div>
-    </div>
-    <!-- TODO: Replace card content with real exhibitor data -->
   </section>
 
-  <!-- CONFERENCES grid 4 cards -->
-  <section id="conferences" class="container">
-    <h2 class="section-title animate-title">Conferences & Talks</h2>
-    <div class="stagger-grid" style="grid-template-columns:repeat(auto-fit, minmax(250px,1fr));">
-      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>Dr. Sarah Chen</h3><p style="color:var(--deep-purple);">Future of Global Education</p><p style="color:var(--teal);">Oct 12 · 10:00</p><p>Brief speaker bio placeholder.</p></div>
-      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>James Mwangi</h3><p style="color:var(--deep-purple);">Tech Hubs in Africa</p><p style="color:var(--teal);">Oct 12 · 14:00</p><p>Brief speaker bio placeholder.</p></div>
-      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>Elena Petrova</h3><p style="color:var(--deep-purple);">Cultural Diplomacy</p><p style="color:var(--teal);">Oct 13 · 11:30</p><p>Brief speaker bio placeholder.</p></div>
-      <div class="conference-card stagger-item" style="background:var(--bg-light); border-radius:32px; padding:1.5rem;"><div style="width:80px;height:80px;border-radius:50%;background:var(--gradient); margin-bottom:1rem;"></div><h3>Carlos Mendez</h3><p style="color:var(--deep-purple);">Study Abroad Trends</p><p style="color:var(--teal);">Oct 13 · 16:00</p><p>Brief speaker bio placeholder.</p></div>
+  <div class="wave-divider"></div>
+
+  <!-- CONFERENCES (white bg) -->
+  <section id="conferences" class="section-white">
+    <div class="container">
+      <h2 class="section-title animate-entry">Conferences & Talks</h2>
+      <div class="conf-grid">
+        <div class="conf-card stagger-item"><div class="speaker-img"></div><h3 style="font-family:'Oxanium';">Dr. Sarah Chen</h3><p style="color:var(--purple);">Future of Global Education</p><p style="color:var(--teal);">Oct 12 · 10:00</p><p>Speaker bio placeholder.</p></div>
+        <div class="conf-card stagger-item"><div class="speaker-img"></div><h3 style="font-family:'Oxanium';">James Mwangi</h3><p style="color:var(--purple);">Tech Hubs in Africa</p><p style="color:var(--teal);">Oct 12 · 14:00</p><p>Speaker bio placeholder.</p></div>
+        <div class="conf-card stagger-item"><div class="speaker-img"></div><h3 style="font-family:'Oxanium';">Elena Petrova</h3><p style="color:var(--purple);">Cultural Diplomacy</p><p style="color:var(--teal);">Oct 13 · 11:30</p><p>Speaker bio placeholder.</p></div>
+        <div class="conf-card stagger-item"><div class="speaker-img"></div><h3 style="font-family:'Oxanium';">Carlos Mendez</h3><p style="color:var(--purple);">Study Abroad Trends</p><p style="color:var(--teal);">Oct 13 · 16:00</p><p>Speaker bio placeholder.</p></div>
+      </div>
+      <!-- TODO: Replace with real speaker profiles -->
     </div>
-    <!-- TODO: Replace with real speaker info -->
   </section>
+
+  <div class="wave-divider flip"></div>
 
   <!-- NETWORKING SPACE -->
-  <section id="networking" class="container">
-    <h2 class="section-title animate-title">Networking Space</h2>
-    <div class="section-sub animate-title">Where students meet global experts</div>
-    <div class="network-dots">
-      <div class="dot-group"><div class="dot">👥</div><span>Students</span></div>
-      <div class="connector-line"></div>
-      <div class="dot-group"><div class="dot">🧠</div><span>Experts</span></div>
+  <section id="networking">
+    <div class="container">
+      <h2 class="section-title animate-entry">Networking Space</h2>
+      <div class="section-sub animate-entry">Where students connect with global experts</div>
+      <div class="network-visual">
+        <div class="dot-cluster"><div class="dot">👥</div><span>Students</span></div>
+        <div class="line-cluster"></div>
+        <div class="dot-cluster"><div class="dot">🧠</div><span>Experts</span></div>
+      </div>
+      <div class="expert-cards">
+        <div class="expert-card"><div class="circle"></div><p><strong>Dr. Adams</strong><br>Education</p></div>
+        <div class="expert-card"><div class="circle"></div><p><strong>Prof. Bouchard</strong><br>Tech</p></div>
+        <div class="expert-card"><div class="circle"></div><p><strong>Ms. Rivera</strong><br>NGO</p></div>
+      </div>
+      <div style="text-align:center;"><a href="#" class="btn btn-primary">Reserve Your Spot</a></div>
+      <!-- TODO: Replace with real expert bios -->
     </div>
-    <div style="display:flex; gap:2rem; justify-content:center; flex-wrap:wrap;">
-      <div style="text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:var(--gradient); margin-bottom:0.5rem;"></div><p><strong>Dr. Adams</strong><br>Education</p></div>
-      <div style="text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:var(--gradient); margin-bottom:0.5rem;"></div><p><strong>Prof. Bouchard</strong><br>Tech</p></div>
-      <div style="text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:var(--gradient); margin-bottom:0.5rem;"></div><p><strong>Ms. Rivera</strong><br>NGO</p></div>
-    </div>
-    <div style="text-align:center; margin-top:2rem;"><a href="#" class="btn btn-primary">Reserve Your Spot</a></div>
-    <!-- TODO: Replace with real expert profiles -->
   </section>
 
-  <!-- QUIZ & GIVEAWAY -->
-  <section id="quiz" class="container">
-    <h2 class="section-title animate-title">Quiz & Win</h2>
-    <div class="section-sub animate-title">Answer. Learn. Win.</div>
-    <p style="font-size:1.3rem; margin-bottom:1rem;">Test your global knowledge and stand a chance to win travel vouchers, gadgets, and more!</p>
-    <div style="font-size:5rem; animation:pulse 1.5s infinite;">🏆</div>
-    <a href="#" class="btn btn-primary" style="margin-top:2rem; display:inline-block;">Join the Quiz</a>
-    <!-- TODO: Link button to actual quiz platform -->
+  <div class="wave-divider"></div>
+
+  <!-- QUIZ & GIVEAWAY (white bg) -->
+  <section id="quiz" class="section-white">
+    <div class="container">
+      <h2 class="section-title animate-entry">Quiz & Win</h2>
+      <div class="section-sub animate-entry">Answer. Learn. Win Prizes.</div>
+      <p style="font-size:1.3rem; margin-bottom:2rem;">Test your global knowledge and stand a chance to win exclusive prizes!</p>
+      <div class="trophy">🏆</div>
+      <div class="prize-grid">
+        <div class="prize-card">Prize 1</div>
+        <div class="prize-card">Prize 2</div>
+        <div class="prize-card">Prize 3</div>
+      </div>
+      <!-- TODO: Replace prize cards with real prizes -->
+      <a href="#" class="btn btn-outline">Join the Quiz</a>
+    </div>
   </section>
+
+  <div class="wave-divider flip"></div>
 
   <!-- REGISTRATION -->
-  <section id="registration" class="container">
-    <h2 class="section-title animate-title">Register Now</h2>
-    <div class="tab-bar">
-      <button class="tab active" id="tabConference">📋 Conference</button>
-      <button class="tab" id="tabNetworking">🤝 Networking Space</button>
-    </div>
-    <div class="form-panel" id="formPanel">
-      <!-- conference form (visible by default) -->
-      <form id="conferenceForm" style="display:block;">
-        <input type="text" placeholder="Full Name" value=""><!-- TODO: real integration -->
-        <input type="email" placeholder="Email Address">
-        <input type="tel" placeholder="Phone Number">
-        <input type="text" placeholder="University / Institution">
-        <select><option>Session option 1</option><option>Session option 2</option></select>
-        <button class="btn btn-primary" type="submit">Submit</button>
-      </form>
-      <!-- networking form (hidden) -->
-      <form id="networkingForm" style="display:none;">
-        <input type="text" placeholder="Full Name">
-        <input type="email" placeholder="Email Address">
-        <input type="tel" placeholder="Phone Number">
-        <input type="text" placeholder="University / Institution">
-        <select><option>Networking slot A</option><option>Networking slot B</option></select>
-        <button class="btn btn-primary" type="submit">Submit</button>
-      </form>
+  <section id="registration">
+    <div class="container">
+      <h2 class="section-title animate-entry">Register Now</h2>
+      <div class="tab-bar">
+        <button class="tab active" id="tabConference">Conference</button>
+        <button class="tab" id="tabNetworking">Networking Space</button>
+      </div>
+      <div class="form-panel" id="formPanel">
+        <!-- conference form -->
+        <form id="conferenceForm" style="display:block;">
+          <input type="text" placeholder="Full Name" required>
+          <input type="email" placeholder="Email Address" required>
+          <input type="tel" placeholder="Phone Number">
+          <input type="text" placeholder="University / Institution">
+          <select>
+            <option>Session 1 (Placeholder)</option>
+            <option>Session 2 (Placeholder)</option>
+          </select>
+          <button class="btn btn-primary" type="submit">Submit</button>
+          <p style="font-size:0.9rem;">* All fields required</p>
+        </form>
+        <!-- networking form (hidden) -->
+        <form id="networkingForm" style="display:none;">
+          <input type="text" placeholder="Full Name" required>
+          <input type="email" placeholder="Email Address" required>
+          <input type="tel" placeholder="Phone Number">
+          <input type="text" placeholder="University / Institution">
+          <select>
+            <option>Networking slot A</option>
+            <option>Networking slot B</option>
+          </select>
+          <button class="btn btn-primary" type="submit">Submit</button>
+          <p style="font-size:0.9rem;">* All fields required</p>
+        </form>
+      </div>
+      <!-- TODO: Replace dropdown options with real sessions -->
     </div>
   </section>
+
+  <div class="wave-divider"></div>
 
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-logo">
-      <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'logo-fallback\'>WORLD SUMMIT</div>';">
+      <img src="YOUR_LOGO_HERE.png" alt="World Summit Logo" class="logo-img"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback">WORLD<br>SUMMIT</div>
     </div>
-    <p style="font-size:1.5rem; font-family:var(--font-display);">World Summit – 2nd Edition</p>
+    <p style="font-family:'Oxanium'; font-size:1.5rem;">World Summit – 2nd Edition</p>
     <div class="social-icons">
       <a href="#">🔗</a> <a href="#">📘</a> <a href="#">📸</a>
     </div>
-    <p><!-- TODO: Replace with real email -->Contact: contact@worldsummit.com</p>
-    <p style="margin-top:1rem;">© 2025 World Summit. All rights reserved.</p>
+    <p><!-- TODO: Replace with real email -->contact@worldsummit.com</p>
+    <p>© 2025 World Summit. All rights reserved.</p>
   </footer>
 
   <script>
     (function() {
-      // NAVBAR SHRINK
-      const navbar = document.getElementById('navbar');
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 80) navbar.classList.add('shrink');
-        else navbar.classList.remove('shrink');
+      // -------------------- THREE.JS GLOBE --------------------
+      const canvas = document.getElementById('globe-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      scene.background = null; // transparent
+
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 14);
+
+      // lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      const dirLight = new THREE.DirectionalLight(0xC8102E, 0.8);
+      dirLight.position.set(1, 1, 1);
+      scene.add(dirLight);
+
+      // globe group
+      const globeGroup = new THREE.Group();
+
+      // inner sphere (faint glow)
+      const innerGeo = new THREE.SphereGeometry(4.95, 64, 64);
+      const innerMat = new THREE.MeshStandardMaterial({ color: 0xC8102E, emissive: 0x330000, transparent: true, opacity: 0.04 });
+      const innerSphere = new THREE.Mesh(innerGeo, innerMat);
+      globeGroup.add(innerSphere);
+
+      // wireframe sphere
+      const wireframeGeo = new THREE.SphereGeometry(5, 32, 32);
+      const wireframeMat = new THREE.MeshStandardMaterial({ color: 0x5B2D8E, wireframe: true, transparent: true, opacity: 0.18 });
+      const wireframeSphere = new THREE.Mesh(wireframeGeo, wireframeMat);
+      globeGroup.add(wireframeSphere);
+
+      scene.add(globeGroup);
+
+      // tilt variables
+      let targetRotX = 0.3, targetRotY = 0;
+      let currentRotX = 0.3, currentRotY = 0;
+
+      // mouse move effect
+      document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        const y = -(e.clientY / window.innerHeight) * 2 + 1;
+        targetRotY = x * 0.15;  // max ±0.15 rad
+        targetRotX = 0.3 + y * 0.1; // base 0.3 ±0.1
       });
 
-      // PROGRESS BAR
+      // animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // smooth lerp
+        currentRotX += (targetRotX - currentRotX) * 0.05;
+        currentRotY += (targetRotY - currentRotY) * 0.05;
+        globeGroup.rotation.x = currentRotX;
+        globeGroup.rotation.y += 0.0015; // continuous rotation
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // resize
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      // -------------------- JS-POWERED ENTRY ANIMATIONS --------------------
+      function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+
+      // set initial styles for all elements that need animation
+      const animatedElements = document.querySelectorAll('.animate-entry, .stagger-item, .conf-card, .exhibitor-card, .prize-card, .expert-card, .btn, .badge, .pill, .section-title, .section-sub');
+      animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.92) translateY(30px)';
+        el.style.transition = 'none'; // we use rAF
+      });
+
+      // observer for triggering animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = entry.target;
+            if (target.classList.contains('stagger-item')) {
+              // handle parent? actually stagger items are children, we need to animate them with delay relative to parent
+              // better to observe a common parent container with class 'stagger-grid'? but we have multiple grids.
+              // we'll handle by checking parent
+              const parent = target.parentElement;
+              if (parent && parent.classList.contains('stagger-grid')) {
+                // already handled by parent observer? we can observe each parent separately.
+              } else {
+                // fallback: animate with no stagger
+                animateElement(target, 0);
+              }
+            } else {
+              animateElement(target, 0);
+            }
+            observer.unobserve(target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      // observe all elements individually (simpler)
+      animatedElements.forEach(el => observer.observe(el));
+
+      // also observe parents of stagger-items to apply staggered effect
+      const staggerContainers = document.querySelectorAll('.conf-grid, .exhibitor-grid, .prize-grid, .expert-cards');
+      staggerContainers.forEach(container => {
+        const items = container.querySelectorAll('.stagger-item, .conf-card, .exhibitor-card, .prize-card, .expert-card');
+        // when container visible, animate children with delay
+        const containerObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const items = entry.target.querySelectorAll('.stagger-item, .conf-card, .exhibitor-card, .prize-card, .expert-card');
+              items.forEach((item, index) => {
+                animateElement(item, index * 120);
+              });
+              containerObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        containerObserver.observe(container);
+      });
+
+      function animateElement(el, delay) {
+        setTimeout(() => {
+          const startTime = performance.now();
+          const duration = 900;
+          function step(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = easeOutExpo(progress);
+            el.style.opacity = eased;
+            const scale = 0.92 + 0.08 * eased;
+            const translateY = 30 - 30 * eased;
+            el.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            if (progress < 1) {
+              requestAnimationFrame(step);
+            } else {
+              el.style.opacity = '1';
+              el.style.transform = 'scale(1) translateY(0)';
+            }
+          }
+          requestAnimationFrame(step);
+        }, delay);
+      }
+
+      // -------------------- COUNTER ANIMATION --------------------
+      // create stat row
+      const statRow = document.createElement('div');
+      statRow.className = 'container';
+      statRow.style.display = 'flex';
+      statRow.style.justifyContent = 'space-around';
+      statRow.style.margin = '2rem auto';
+      statRow.innerHTML = `
+        <div><span class="stat-num" data-target="50">0</span>+ Countries</div>
+        <div><span class="stat-num" data-target="200">0</span>+ Speakers</div>
+        <div><span class="stat-num" data-target="3000">0</span>+ Attendees</div>
+      `;
+      document.getElementById('sponsors').after(statRow);
+
+      const statNumbers = document.querySelectorAll('.stat-num');
+      const statObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            statNumbers.forEach(num => {
+              const target = parseInt(num.getAttribute('data-target'));
+              let start = 0;
+              const duration = 1500;
+              const startTime = performance.now();
+              function countStep(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeOutExpo(progress);
+                const current = Math.floor(eased * target);
+                num.innerText = current;
+                if (progress < 1) requestAnimationFrame(countStep);
+                else num.innerText = target;
+              }
+              requestAnimationFrame(countStep);
+            });
+            statObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+      statObserver.observe(statRow);
+
+      // -------------------- NAVBAR SHRINK & ACTIVE LINK --------------------
+      const navbar = document.getElementById('navbar');
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('.nav-link');
+
+      function updateNav() {
+        if (window.scrollY > 80) navbar.classList.add('shrink');
+        else navbar.classList.remove('shrink');
+
+        // active link based on scroll
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (window.scrollY >= sectionTop - 200 && window.scrollY < sectionTop + sectionHeight - 200) {
+            current = section.getAttribute('id');
+          }
+        });
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+        });
+      }
+      window.addEventListener('scroll', updateNav);
+      updateNav();
+
+      // -------------------- PROGRESS BAR --------------------
       const progressBar = document.getElementById('progress-bar');
       window.addEventListener('scroll', () => {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
@@ -728,97 +1013,40 @@
         progressBar.style.width = scrolled + '%';
       });
 
-      // INTERSECTION OBSERVER (fade-slide + stagger)
-      const faders = document.querySelectorAll('.animate-title, .fade-slide');
-      const staggerGrids = document.querySelectorAll('.stagger-grid');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      }, { threshold: 0.2 });
-      faders.forEach(el => observer.observe(el));
-      staggerGrids.forEach(grid => observer.observe(grid));
+      // -------------------- MARQUEE (JS setInterval) --------------------
+      const track1 = document.getElementById('marqueeTrack1');
+      const track2 = document.getElementById('marqueeTrack2');
+      let pos1 = 0, pos2 = 0;
+      const speed = 1; // px per 12ms
+      let marqueeInterval;
 
-      // ACTIVE NAV LINK (using same observer on sections)
-      const sections = document.querySelectorAll('section');
-      const navLinks = document.querySelectorAll('.nav-link');
-      const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute('id');
-            navLinks.forEach(link => {
-              link.classList.remove('active');
-              if (link.getAttribute('href') === '#' + id) link.classList.add('active');
-            });
-          }
-        });
-      }, { threshold: 0.5 });
-      sections.forEach(s => sectionObserver.observe(s));
-
-      // COUNTER (stats) – create mini stats if not present. Add counters quickly
-      const statSection = document.createElement('div');
-      statSection.className = 'container fade-slide';
-      statSection.style.display = 'flex';
-      statSection.style.justifyContent = 'space-around';
-      statSection.style.margin = '2rem auto';
-      statSection.innerHTML = `
-        <div><span class="stat-num" data-target="50">0</span>+ Countries</div>
-        <div><span class="stat-num" data-target="200">0</span>+ Speakers</div>
-        <div><span class="stat-num" data-target="3000">0</span>+ Attendees</div>
-      `;
-      document.getElementById('sponsors').before(statSection);
-      observer.observe(statSection);
-
-      // counter function
-      const statNumbers = document.querySelectorAll('.stat-num');
-      let counted = false;
-      function startCounters() {
-        if (counted) return;
-        statNumbers.forEach(el => {
-          const target = parseInt(el.getAttribute('data-target'));
-          let current = 0;
-          const inc = target / 50;
-          const timer = setInterval(() => {
-            current += inc;
-            if (current >= target) {
-              el.innerText = target;
-              clearInterval(timer);
-            } else {
-              el.innerText = Math.floor(current);
-            }
-          }, 20);
-        });
-        counted = true;
+      function startMarquee() {
+        marqueeInterval = setInterval(() => {
+          pos1 -= speed;
+          pos2 += speed;
+          // reset logic: when half width (total width/2) is reached, reset to 0
+          const totalWidth1 = track1.scrollWidth / 2; // because duplicated
+          const totalWidth2 = track2.scrollWidth / 2;
+          if (Math.abs(pos1) >= totalWidth1) pos1 = 0;
+          if (pos2 >= totalWidth2) pos2 = 0;
+          track1.style.transform = `translateX(${pos1}px)`;
+          track2.style.transform = `translateX(${pos2}px)`;
+        }, 12);
       }
-      // trigger when statSection visible
-      const statObserver = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) startCounters(); });
-      }, { threshold: 0.5 });
-      statObserver.observe(statSection);
+      startMarquee();
 
-      // PARALLAX ORBS
-      const hero = document.querySelector('.hero');
-      const orbs = document.querySelectorAll('.orb');
-      hero.addEventListener('mousemove', (e) => {
-        const x = e.clientX / window.innerWidth;
-        const y = e.clientY / window.innerHeight;
-        orbs[0].style.transform = `translate(${x * 30}px, ${y * 30}px)`;
-        orbs[1].style.transform = `translate(${-x * 30}px, ${-y * 30}px)`;
+      const marqueeRows = document.querySelectorAll('.marquee-row');
+      marqueeRows.forEach(row => {
+        row.addEventListener('mouseenter', () => clearInterval(marqueeInterval));
+        row.addEventListener('mouseleave', startMarquee);
       });
 
-      // SPONSOR MARQUEE pause on hover
-      const marquee = document.querySelector('.marquee-container');
-      marquee.addEventListener('mouseenter', () => marquee.classList.add('paused'));
-      marquee.addEventListener('mouseleave', () => marquee.classList.remove('paused'));
+      // -------------------- EXHIBITOR CAROUSEL SCROLL --------------------
+      const grid = document.getElementById('exhibitorGrid');
+      document.getElementById('exhibitorLeft').addEventListener('click', () => grid.scrollBy({ left: -300, behavior: 'smooth' }));
+      document.getElementById('exhibitorRight').addEventListener('click', () => grid.scrollBy({ left: 300, behavior: 'smooth' }));
 
-      // EXHIBITOR CAROUSEL arrows
-      const carousel = document.getElementById('exhibitorCarousel');
-      document.getElementById('exhibitorPrev').addEventListener('click', () => carousel.scrollBy({ left: -300, behavior: 'smooth' }));
-      document.getElementById('exhibitorNext').addEventListener('click', () => carousel.scrollBy({ left: 300, behavior: 'smooth' }));
-
-      // CARD TILT
+      // -------------------- CARD 3D TILT --------------------
       const tiltCards = document.querySelectorAll('[data-tilt]');
       tiltCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
@@ -827,45 +1055,52 @@
           const y = e.clientY - rect.top;
           const centerX = rect.width / 2;
           const centerY = rect.height / 2;
-          const rotateX = (y - centerY) / 15;
-          const rotateY = (centerX - x) / 15;
-          card.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+          const rotX = (y - centerY) / 20; // max ~8deg
+          const rotY = (centerX - x) / 20;
+          card.style.transform = `perspective(500px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02)`;
         });
         card.addEventListener('mouseleave', () => {
-          card.style.transform = '';
+          card.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg) scale(1)';
         });
       });
 
-      // TAB SWITCH (registration)
+      // -------------------- TAB SWITCH (height animation) --------------------
       const tabConf = document.getElementById('tabConference');
       const tabNet = document.getElementById('tabNetworking');
       const confForm = document.getElementById('conferenceForm');
       const netForm = document.getElementById('networkingForm');
       const panel = document.getElementById('formPanel');
-      tabConf.addEventListener('click', () => {
-        tabConf.classList.add('active');
-        tabNet.classList.remove('active');
-        confForm.style.display = 'block';
-        netForm.style.display = 'none';
-      });
-      tabNet.addEventListener('click', () => {
-        tabNet.classList.add('active');
-        tabConf.classList.remove('active');
-        confForm.style.display = 'none';
-        netForm.style.display = 'block';
-      });
 
-      // smooth height transition (simple example: panel height changes)
-      // set height automatically via transition (already using overflow hidden + block/none)
+      function switchTab(activeTab) {
+        const isConf = activeTab === 'conf';
+        const showForm = isConf ? confForm : netForm;
+        const hideForm = isConf ? netForm : confForm;
+
+        // set panel height to current height to prepare animation
+        const startHeight = panel.offsetHeight;
+        hideForm.style.display = 'none';
+        showForm.style.display = 'block';
+        const endHeight = panel.scrollHeight;
+
+        panel.style.height = startHeight + 'px';
+        panel.offsetHeight; // force reflow
+        panel.style.height = endHeight + 'px';
+        setTimeout(() => {
+          panel.style.height = 'auto';
+        }, 400); // match transition
+
+        tabConf.classList.toggle('active', isConf);
+        tabNet.classList.toggle('active', !isConf);
+      }
+
+      tabConf.addEventListener('click', () => switchTab('conf'));
+      tabNet.addEventListener('click', () => switchTab('net'));
+      // ensure initial height is auto
+      panel.style.height = 'auto';
+
+      // TODO comments repeated (already in HTML)
     })();
   </script>
-  <!-- additional TODO comments as requested -->
-  <!-- TODO: Replace dropdown options with real sessions -->
-  <!-- TODO: Replace sponsor boxes with actual logos -->
-  <!-- TODO: Replace card content with real exhibitor data -->
-  <!-- TODO: Replace with real speaker info -->
-  <!-- TODO: Replace with real expert profiles -->
-  <!-- TODO: Link button to actual quiz platform -->
-  <!-- TODO: Replace with real email -->
+  <!-- TODO: Replace sponsor boxes with actual logos, exhibitor content, speaker info, expert bios, prize cards, real email, etc. -->
 </body>
 </html>
