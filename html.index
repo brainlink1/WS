@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Summit – 2nd Edition</title>
+  <!-- Google Fonts: bold display (Playfair Display) + light sans (Poppins) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* -------------------- RESET & VARIABLES -------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-light: #F7F4F0;
+      --white: #ffffff;
+      --crimson: #C8102E;
+      --purple: #6B3FA0;
+      --teal: #1A5276;
+      --gray-light: #e0dcd5;
+      --gray-mid: #c0bcb5;
+      --shadow: 0 20px 30px -10px rgba(0,0,0,0.15);
+      --border-radius-card: 16px;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: #1e1e1e;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 300;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .display-font {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+      color: var(--teal);
+    }
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: #4a4a4a;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    /* -------------------- UTILS & COMMENTS -------------------- */
+    /* TODO: Replace all placeholder images with real assets */
+    /* All 'YOUR_LOGO_HERE.png' occurrences must be replaced */
+
+    /* -------------------- FIXED NAVBAR -------------------- */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.2rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(247, 244, 240, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      transition: padding 0.3s, box-shadow 0.3s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .navbar.shrink {
+      padding: 0.6rem 5%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .logo-nav {
+      width: 140px; /* navbar logo size */
+      transition: width 0.3s;
+    }
+    .navbar.shrink .logo-nav {
+      width: 100px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--teal);
+      font-weight: 400;
+      font-size: 1rem;
+    }
+    .hamburger {
+      display: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: var(--purple);
+    }
+    /* mobile menu overlay */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: var(--bg-light);
+      z-index: 999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      font-size: 2rem;
+    }
+    .mobile-menu.active {
+      display: flex;
+    }
+    .mobile-menu a {
+      color: var(--purple);
+      text-decoration: none;
+    }
+    .close-btn {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      font-size: 3rem;
+      cursor: pointer;
+    }
+
+    /* -------------------- HERO SECTION -------------------- */
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #1e2b3a;
+      overflow: hidden;
+      background-color: var(--bg-light);
+      margin-top: 0;
+      padding-top: 80px; /* navbar offset */
+    }
+    .world-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: transform 0.1s ease-out;
+    }
+    .world-bg svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      padding: 0 20px;
+    }
+    .hero-logo {
+      width: 220px; /* hero logo size */
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: 6rem;
+      line-height: 1;
+      color: var(--crimson);
+      text-shadow: 4px 4px 0 var(--purple);
+      margin-bottom: 0.2rem;
+    }
+    .hero .subtitle {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--teal);
+      margin-bottom: 1rem;
+    }
+    .hero .slogan {
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--purple);
+    }
+    .hero .date-loc {
+      font-size: 1.4rem;
+      margin: 1.5rem 0 2rem;
+      letter-spacing: 2px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--crimson);
+      color: white;
+      padding: 1rem 3rem;
+      border-radius: 50px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(200,16,46,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .cta-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 30px rgba(200,16,46,0.5);
+    }
+
+    /* -------------------- SPONSORS MARQUEE -------------------- */
+    .sponsors {
+      padding: 4rem 5%;
+      background: var(--white);
+      position: relative;
+    }
+    .marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      width: 100%;
+      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+    .marquee-track {
+      display: inline-block;
+      animation: scroll 30s linear infinite;
+    }
+    .sponsor-item {
+      display: inline-block;
+      width: 200px;
+      height: 120px;
+      background: var(--gray-light);
+      margin: 0 20px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #555;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* -------------------- EXHIBITORS SECTION -------------------- */
+    .exhibitors {
+      padding: 5rem 5%;
+      background: var(--bg-light);
+      position: relative;
+    }
+    .scroll-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .cards-wrapper {
+      display: flex;
+      gap: 2rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 1rem 0.5rem;
+      scrollbar-width: none;
+    }
+    .cards-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+    .exhibitor-card {
+      min-width: 280px;
+      background: var(--white);
+      border-radius: var(--border-radius-card);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    .flag-placeholder {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(145deg, var(--teal), var(--purple));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .category-badge {
+      display: inline-block;
+      background: var(--crimson);
+      color: white;
+      padding: 0.2rem 1rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      margin: 0.5rem 0;
+    }
+    .arrow {
+      background: var(--purple);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      position: absolute;
+      z-index: 10;
+      opacity: 0.8;
+      user-select: none;
+    }
+    .arrow-left {
+      left: -10px;
+    }
+    .arrow-right {
+      right: -10px;
+    }
+
+    /* -------------------- CONFERENCES GRID -------------------- */
+    .conferences {
+      padding: 5rem 5%;
+      background: var(--white);
+    }
+    .speaker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2.5rem;
+    }
+    .speaker-card {
+      background: var(--bg-light);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+      transition: transform 0.3s, opacity 0.5s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .speaker-card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .photo-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--teal);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.9rem;
+    }
+    .speaker-name {
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: var(--purple);
+    }
+
+    /* -------------------- NETWORKING SPACE -------------------- */
+    .networking {
+      padding: 5rem 5%;
+      background: var(--bg-light);
+      position: relative;
+    }
+    .dots-container {
+      position: relative;
+      height: 300px;
+      margin: 3rem 0;
+      background: rgba(255,255,255,0.5);
+      border-radius: 60px;
+      overflow: hidden;
+    }
+    #networkCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .experts-preview {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 3rem 0;
+    }
+    .expert-card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 30px;
+      width: 200px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .expert-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--purple);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    /* -------------------- QUIZ SECTION -------------------- */
+    .quiz {
+      padding: 5rem 5%;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--teal) 100%);
+      color: white;
+      text-align: center;
+    }
+    .quiz .section-title {
+      color: white;
+    }
+    .prize-icon {
+      font-size: 6rem;
+      margin: 2rem 0;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-20px); }
+    }
+    .quiz .cta-btn {
+      background: white;
+      color: var(--purple);
+    }
+
+    /* -------------------- REGISTRATION TABS -------------------- */
+    .registration {
+      padding: 5rem 5%;
+      background: var(--white);
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .tab {
+      padding: 1rem 2rem;
+      background: var(--gray-light);
+      border-radius: 40px 40px 0 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: var(--crimson);
+      color: white;
+    }
+    .form-panel {
+      display: none;
+      background: var(--bg-light);
+      padding: 2.5rem;
+      border-radius: 0 20px 20px 20px;
+      box-shadow: var(--shadow);
+    }
+    .form-panel.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .submit-btn {
+      background: var(--teal);
+      color: white;
+      padding: 1rem 3rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .submit-btn:hover {
+      background: var(--purple);
+      transform: scale(1.02);
+    }
+    .footnote {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    /* -------------------- FOOTER -------------------- */
+    footer {
+      background: #1e1e2f;
+      color: #ccc;
+      padding: 3rem 5%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-logo {
+      width: 140px;
+    }
+    .social-icons a {
+      color: white;
+      margin: 0 10px;
+      font-size: 1.5rem;
+      text-decoration: none;
+    }
+
+    /* -------------------- WAVY DIVIDERS -------------------- */
+    .wave-divider {
+      position: relative;
+      top: 2px;
+    }
+    .wave-divider svg {
+      display: block;
+      width: 100%;
+      height: 60px;
+    }
+
+    /* -------------------- RESPONSIVE -------------------- */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .hero h1 { font-size: 4rem; }
+      .section-title { font-size: 2.2rem; }
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- FIXED NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
+    <img src="Picture1.png" alt="World Summit Logo" class="logo logo-nav">
+    <ul class="nav-links">
+      <li><a href="#sponsors">Sponsors</a></li>
+      <li><a href="#exhibitors">Exhibitors</a></li>
+      <li><a href="#conferences">Talks</a></li>
+      <li><a href="#networking">Network</a></li>
+      <li><a href="#quiz">Quiz</a></li>
+      <li><a href="#register">Register</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">☰</div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="close-btn" id="closeMenu">&times;</div>
+    <a href="#sponsors">Sponsors</a>
+    <a href="#exhibitors">Exhibitors</a>
+    <a href="#conferences">Talks</a>
+    <a href="#networking">Network</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#register">Register</a>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <div class="world-bg" id="worldBg">
+      <!-- simple SVG world map silhouette (light gray continents) -->
+      <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+        <rect width="1200" height="800" fill="#F0EBE5" />
+        <path fill="#D3CDC5" d="M200,200 Q300,100 400,200 T600,150 Q750,200 800,300 T700,450 Q600,500 500,450 T300,400 Q200,350 200,200 Z" />
+        <path fill="#D3CDC5" d="M900,300 Q1000,250 1100,300 T1150,450 Q1050,500 950,450 T850,350 Q830,300 900,300 Z" />
+        <path fill="#D3CDC5" d="M150,500 Q250,450 350,500 T450,600 Q400,700 300,680 T150,600 Q100,550 150,500 Z" />
+        <circle fill="#D3CDC5" cx="700" cy="600" r="70" />
+        <circle fill="#D3CDC5" cx="500" cy="300" r="40" />
+      </svg>
+    </div>
+    <div class="hero-content">
+      <!-- REPLACE 'Picture1.png' with your actual logo file path -->
+      <img src="Picture1.png" alt="World Summit Logo" class="hero-logo">
+      <h1>WORLD SUMMIT</h1>
+      <div class="subtitle">2nd Edition</div>
+      <div class="slogan">[YOUR SLOGAN HERE]</div>
+      <div class="date-loc">[DATE] · [CITY, COUNTRY]</div>
+      <a href="#register" class="cta-btn">Register Now</a>
+    </div>
+  </section>
+
+  <!-- wave divider -->
+  <div class="wave-divider"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path fill="#ffffff" d="M0,50 C300,150 600,-50 1440,50 L1440,100 L0,100 Z"/></svg></div>
+
+  <!-- SPONSORS -->
+  <section class="sponsors" id="sponsors">
+    <h2 class="section-title">Our Sponsors</h2>
+    <div class="marquee">
+      <div class="marquee-track">
+        <!-- 8 placeholder logos repeated twice for seamless loop -->
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+        <span class="sponsor-item">Sponsor Logo</span>
+      </div>
+    </div>
+    <!-- TODO: Replace placeholder sponsor boxes with actual logos -->
+  </section>
+
+  <!-- EXHIBITORS -->
+  <section class="exhibitors" id="exhibitors">
+    <h2 class="section-title">Exhibitors</h2>
+    <div class="section-subtitle">Explore countries, study abroad opportunities & travel experiences</div>
+    <div class="scroll-container">
+      <div class="arrow arrow-left" id="scrollLeft">←</div>
+      <div class="cards-wrapper" id="exhibitorWrapper">
+        <!-- 6 cards -->
+        <div class="exhibitor-card" data-tilt>
+          <div class="flag-placeholder">🇺🇳 Flag</div>
+          <h3>Country Name</h3>
+          <span class="category-badge">Country Showcase</span>
+          <p>Description of the exhibition goes here.</p>
+        </div>
+        <div class="exhibitor-card" data-tilt>
+          <div class="flag-placeholder">🇬🇧 Flag</div>
+          <h3>Country Name</h3>
+          <span class="category-badge">Study Abroad</span>
+          <p>Description of the exhibition goes here.</p>
+        </div>
+        <div class="exhibitor-card" data-tilt>
+          <div class="flag-placeholder">🇯🇵 Flag</div>
+          <h3>Country Name</h3>
+          <span class="category-badge">Travel</span>
+          <p>Description of the exhibition goes here.</p>
+        </div>
+        <div class="exhibitor-card" data-tilt>
+          <div class="flag-placeholder">🇫🇷 Flag</div>
+          <h3>Country Name</h3>
+          <span class="category-badge">Country Showcase</span>
+          <p>Description of the exhibition goes here.</p>
+        </div>
+        <div class="exhibitor-card" data-tilt>
+          <div class="flag-placeholder">🇩🇪 Flag</div>
+          <h3>Country Name</h3>
+          <span class="category-badge">Study Abroad</span>
+          <p>Description of the exhibition goes here.</p>
+        </div>
+        <div class="exhibitor-card" data-tilt>
+          <div class="flag-placeholder">🇨🇦 Flag</div>
+          <h3>Country Name</h3>
+          <span class="category-badge">Travel</span>
+          <p>Description of the exhibition goes here.</p>
+        </div>
+      </div>
+      <div class="arrow arrow-right" id="scrollRight">→</div>
+    </div>
+  </section>
+
+  <!-- CONFERENCES -->
+  <section class="conferences" id="conferences">
+    <h2 class="section-title">Conferences & Talks</h2>
+    <div class="speaker-grid">
+      <!-- 4 speaker cards with staggered fade-up (IntersectionObserver) -->
+      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
+      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
+      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
+      <div class="speaker-card"><div class="photo-placeholder">Speaker Photo</div><div class="speaker-name">Speaker Full Name</div><div>Talk Topic Goes Here</div><div>[Date] · [Time]</div><p>Short speaker bio or description.</p></div>
+    </div>
+  </section>
+
+  <!-- NETWORKING SPACE -->
+  <section class="networking" id="networking">
+    <h2 class="section-title">Networking Space</h2>
+    <div class="section-subtitle">Where students meet industry experts</div>
+    <div class="dots-container">
+      <canvas id="networkCanvas"></canvas>
+    </div>
+    <div class="experts-preview">
+      <div class="expert-card"><div class="expert-photo">Photo</div><div>Expert Name</div><div>Field / Company</div></div>
+      <div class="expert-card"><div class="expert-photo">Photo</div><div>Expert Name</div><div>Field / Company</div></div>
+      <div class="expert-card"><div class="expert-photo">Photo</div><div>Expert Name</div><div>Field / Company</div></div>
+    </div>
+    <p>Join our exclusive networking sessions and connect with professionals who have lived and worked abroad.</p>
+    <a href="#register" class="cta-btn" style="margin-top:2rem;">Reserve Your Spot</a>
+  </section>
+
+  <!-- QUIZ & GIVEAWAY -->
+  <section class="quiz" id="quiz">
+    <h2 class="section-title">Quiz & Win</h2>
+    <div class="section-subtitle" style="color: #eee;">Test your knowledge and enter the giveaway</div>
+    <div class="prize-icon">🏆</div>
+    <p style="font-size:1.4rem;">Answer questions about world cultures and studying abroad — winners get exclusive prizes!</p>
+    <a href="#" class="cta-btn" style="background:white; color:var(--purple); margin-top:2rem;">Join the Quiz</a>
+  </section>
+
+  <!-- REGISTRATION -->
+  <section class="registration" id="register">
+    <h2 class="section-title">Register Now</h2>
+    <div class="tabs">
+      <div class="tab active" data-tab="conf">Conference</div>
+      <div class="tab" data-tab="network">Networking Space</div>
+    </div>
+    <div class="form-panel active" id="confPanel">
+      <form>
+        <div class="form-group"><input type="text" placeholder="Full Name" required></div>
+        <div class="form-group"><input type="email" placeholder="Email Address" required></div>
+        <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
+        <div class="form-group"><input type="text" placeholder="University / Institution" required></div>
+        <div class="form-group"><select><option>Select session (dropdown placeholder)</option></select></div>
+        <button class="submit-btn">Submit</button>
+        <div class="footnote">* All fields are required</div>
+      </form>
+    </div>
+    <div class="form-panel" id="networkPanel">
+      <form>
+        <div class="form-group"><input type="text" placeholder="Full Name" required></div>
+        <div class="form-group"><input type="email" placeholder="Email Address" required></div>
+        <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
+        <div class="form-group"><input type="text" placeholder="University / Institution" required></div>
+        <div class="form-group"><select><option>Select session (dropdown placeholder)</option></select></div>
+        <button class="submit-btn">Submit</button>
+        <div class="footnote">* All fields are required</div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
+    <img src="Picture1.png" alt="World Summit Logo" class="footer-logo">
+    <div>World Summit – 2nd Edition<br>contact@worldsummit.com</div>
+    <div class="social-icons">
+      <a href="#">📘</a><a href="#">🐦</a><a href="#">📸</a>
+    </div>
+    <div>© 2025 World Summit. All rights reserved.</div>
+  </footer>
+
+  <script>
+    (function() {
+      // ----- Navbar shrink on scroll -----
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) navbar.classList.add('shrink');
+        else navbar.classList.remove('shrink');
+      });
+
+      // ----- Mobile menu -----
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const closeMenu = document.getElementById('closeMenu');
+      hamburger.addEventListener('click', () => mobileMenu.classList.add('active'));
+      closeMenu.addEventListener('click', () => mobileMenu.classList.remove('active'));
+      mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.remove('active')));
+
+      // ----- Hero parallax (mouse move) -----
+      const worldBg = document.getElementById('worldBg');
+      document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+        worldBg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+      });
+
+      // ----- 3D tilt on exhibitor cards -----
+      const tiltCards = document.querySelectorAll('[data-tilt]');
+      tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = (y - centerY) / 10;
+          const rotateY = (centerX - x) / 10;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+        });
+      });
+
+      // ----- Horizontal scroll arrows for exhibitors -----
+      const wrapper = document.getElementById('exhibitorWrapper');
+      document.getElementById('scrollLeft').addEventListener('click', () => wrapper.scrollBy({ left: -300, behavior: 'smooth' }));
+      document.getElementById('scrollRight').addEventListener('click', () => wrapper.scrollBy({ left: 300, behavior: 'smooth' }));
+
+      // ----- IntersectionObserver for fade-up (speaker cards) -----
+      const speakerCards = document.querySelectorAll('.speaker-card');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, idx) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('show'), idx * 100);
+          }
+        });
+      }, { threshold: 0.2 });
+      speakerCards.forEach(card => observer.observe(card));
+
+      // ----- Networking canvas (connecting dots) -----
+      const canvas = document.getElementById('networkCanvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        function resize() {
+          width = canvas.clientWidth; height = canvas.clientHeight;
+          canvas.width = width; canvas.height = height;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const students = [{x:0.2},{x:0.25},{x:0.15},{x:0.22}];
+        const experts = [{x:0.8},{x:0.85},{x:0.75},{x:0.82}];
+        function initPositions() {
+          students.forEach((p,i) => { p.y = 0.3 + i*0.15; p.baseY = p.y; });
+          experts.forEach((p,i) => { p.y = 0.3 + i*0.15; p.baseY = p.y; });
+        }
+        initPositions();
+
+        function draw() {
+          ctx.clearRect(0,0,width,height);
+          // draw nodes
+          ctx.fillStyle = '#C8102E';
+          students.forEach(s => { ctx.beginPath(); ctx.arc(s.x*width, s.y*height, 8, 0, 2*Math.PI); ctx.fill(); });
+          ctx.fillStyle = '#1A5276';
+          experts.forEach(e => { ctx.beginPath(); ctx.arc(e.x*width, e.y*height, 8, 0, 2*Math.PI); ctx.fill(); });
+          // draw lines
+          ctx.strokeStyle = '#6B3FA0';
+          ctx.lineWidth = 2;
+          students.forEach(s => {
+            experts.forEach(e => {
+              ctx.beginPath();
+              ctx.moveTo(s.x*width, s.y*height);
+              ctx.lineTo(e.x*width, e.y*height);
+              ctx.strokeStyle = 'rgba(107,63,160,0.3)';
+              ctx.stroke();
+            });
+          });
+          requestAnimationFrame(draw);
+        }
+        draw();
+
+        // simple animation: float nodes
+        let time = 0;
+        function animateNodes() {
+          time += 0.02;
+          students.forEach((p,i) => { p.y = p.baseY + Math.sin(time + i)*0.05; });
+          experts.forEach((p,i) => { p.y = p.baseY + Math.cos(time + i)*0.05; });
+          requestAnimationFrame(animateNodes);
+        }
+        animateNodes();
+      }
+
+      // ----- Registration tabs -----
+      const tabs = document.querySelectorAll('.tab');
+      const panels = {
+        conf: document.getElementById('confPanel'),
+        network: document.getElementById('networkPanel')
+      };
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const which = tab.dataset.tab;
+          panels.conf.classList.remove('active');
+          panels.network.classList.remove('active');
+          if (which === 'conf') panels.conf.classList.add('active');
+          else panels.network.classList.add('active');
+        });
+      });
+
+      // ----- Smooth scroll for anchor links -----
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+    })();
+  </script>
+  <!-- TODO: Replace all placeholder texts and images with real content -->
+  <!-- REMINDER: Replace 'YOUR_LOGO_HERE.png' with actual logo path -->
+</body>
+</html>
