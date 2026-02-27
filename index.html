@@ -90,7 +90,7 @@
       100% { opacity: 0.8; filter: blur(70px); }
     }
 
-    /* grain texture SVG filter (applied via overlay) */
+    /* grain texture overlay */
     .grain {
       position: fixed;
       top: 0;
@@ -104,7 +104,7 @@
       background-repeat: repeat;
     }
 
-    /* ----- NAVBAR (transparent → solid + blur) ----- */
+    /* ----- NAVBAR (same as before) ----- */
     .navbar {
       position: fixed;
       top: 0;
@@ -164,7 +164,6 @@
       transition: 0.3s;
     }
 
-    /* mobile menu */
     @media (max-width: 900px) {
       .nav-links {
         position: fixed;
@@ -188,7 +187,7 @@
       }
     }
 
-    /* ----- HERO SECTION ----- */
+    /* ----- HERO (unchanged) ----- */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -293,7 +292,6 @@
       box-shadow: 0 0 30px #7C3AED;
     }
 
-    /* fade-up animation */
     .fade-up {
       opacity: 0;
       transform: translateY(30px);
@@ -305,7 +303,7 @@
       transform: translateY(0);
     }
 
-    /* ----- SPONSOR MARQUEE ----- */
+    /* ----- SPONSOR MARQUEE (unchanged) ----- */
     .marquee {
       overflow: hidden;
       white-space: nowrap;
@@ -337,149 +335,40 @@
       100% { transform: translateX(-50%); }
     }
 
- import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import './BounceCards.css';
-
-export default function BounceCards({
-  className = '',
-  images = [],
-  containerWidth = 400,
-  containerHeight = 400,
-  animationDelay = 0.5,
-  animationStagger = 0.06,
-  easeType = 'elastic.out(1, 0.8)',
-  transformStyles = [
-    'rotate(10deg) translate(-170px)',
-    'rotate(5deg) translate(-85px)',
-    'rotate(-3deg)',
-    'rotate(-10deg) translate(85px)',
-    'rotate(2deg) translate(170px)'
-  ],
-  enableHover = true
-}) {
-  const containerRef = useRef(null);
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        '.card',
-        { scale: 0 },
-        {
-          scale: 1,
-          stagger: animationStagger,
-          ease: easeType,
-          delay: animationDelay
-        }
-      );
-    }, containerRef);
-    return () => ctx.revert();
-  }, [animationStagger, easeType, animationDelay]);
-
-  const getNoRotationTransform = transformStr => {
-    const hasRotate = /rotate\([\s\S]*?\)/.test(transformStr);
-    if (hasRotate) {
-      return transformStr.replace(/rotate\([\s\S]*?\)/, 'rotate(0deg)');
-    } else if (transformStr === 'none') {
-      return 'rotate(0deg)';
-    } else {
-      return `${transformStr} rotate(0deg)`;
+    /* exhibitor horizontal scroll (unchanged) */
+    .scroll-container {
+      display: flex;
+      gap: 2rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 1rem 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #7C3AED #12121A;
     }
-  };
-
-  const getPushedTransform = (baseTransform, offsetX) => {
-    const translateRegex = /translate\(([-0-9.]+)px\)/;
-    const match = baseTransform.match(translateRegex);
-    if (match) {
-      const currentX = parseFloat(match[1]);
-      const newX = currentX + offsetX;
-      return baseTransform.replace(translateRegex, `translate(${newX}px)`);
-    } else {
-      return baseTransform === 'none' ? `translate(${offsetX}px)` : `${baseTransform} translate(${offsetX}px)`;
+    .scroll-container::-webkit-scrollbar {
+      height: 6px;
     }
-  };
+    .scroll-container::-webkit-scrollbar-thumb {
+      background: #7C3AED;
+      border-radius: 10px;
+    }
 
-  const pushSiblings = hoveredIdx => {
-    if (!enableHover || !containerRef.current) return;
+    .exhibitor-card {
+      min-width: 300px;
+      flex: 0 0 auto;
+      background: #12121A;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #2a2a35;
+      transition: transform 0.2s, border 0.2s;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
 
-    const q = gsap.utils.selector(containerRef);
-
-    images.forEach((_, i) => {
-      const target = q(`.card-${i}`);
-      gsap.killTweensOf(target);
-
-      const baseTransform = transformStyles[i] || 'none';
-
-      if (i === hoveredIdx) {
-        const noRotationTransform = getNoRotationTransform(baseTransform);
-        gsap.to(target, {
-          transform: noRotationTransform,
-          duration: 0.4,
-          ease: 'back.out(1.4)',
-          overwrite: 'auto'
-        });
-      } else {
-        const offsetX = i < hoveredIdx ? -160 : 160;
-        const pushedTransform = getPushedTransform(baseTransform, offsetX);
-
-        const distance = Math.abs(hoveredIdx - i);
-        const delay = distance * 0.05;
-
-        gsap.to(target, {
-          transform: pushedTransform,
-          duration: 0.4,
-          ease: 'back.out(1.4)',
-          delay,
-          overwrite: 'auto'
-        });
-      }
-    });
-  };
-
-  const resetSiblings = () => {
-    if (!enableHover || !containerRef.current) return;
-
-    const q = gsap.utils.selector(containerRef);
-
-    images.forEach((_, i) => {
-      const target = q(`.card-${i}`);
-      gsap.killTweensOf(target);
-      const baseTransform = transformStyles[i] || 'none';
-      gsap.to(target, {
-        transform: baseTransform,
-        duration: 0.4,
-        ease: 'back.out(1.4)',
-        overwrite: 'auto'
-      });
-    });
-  };
-
-  return (
-    <div
-      className={`bounceCardsContainer ${className}`}
-      ref={containerRef}
-      style={{
-        position: 'relative',
-        width: containerWidth,
-        height: containerHeight
-      }}
-    >
-      {images.map((src, idx) => (
-        <div
-          key={idx}
-          className={`card card-${idx}`}
-          style={{
-            transform: transformStyles[idx] ?? 'none'
-          }}
-          onMouseEnter={() => pushSiblings(idx)}
-          onMouseLeave={resetSiblings}
-        >
-          <img className="image" src={src} alt={`card-${idx}`} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
+    .exhibitor-card:hover {
+      border-color: #7C3AED;
+      box-shadow: 0 0 40px #7C3AED60;
+    }
 
     .flag-placeholder {
       width: 80px;
@@ -510,6 +399,108 @@ export default function BounceCards({
       background: #7C3AED;
     }
 
+    /* ----- BOUNCE CARDS (conferences) ----- */
+    .bounce-container {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+      height: 450px;
+      margin: 3rem auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bounce-card {
+      position: absolute;
+      width: 200px;
+      aspect-ratio: 1 / 1;
+      border-radius: 25px;
+      border: 3px solid rgba(255,255,255,0.8);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px #7C3AED80;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: #1a1a28;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 1rem;
+      color: white;
+      text-align: center;
+      backface-visibility: hidden;
+    }
+
+    .bounce-card .speaker-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #7C3AED, #C4B5FD);
+      margin-bottom: 0.8rem;
+      border: 2px solid white;
+      box-shadow: 0 0 20px #7C3AED;
+    }
+
+    .bounce-card h4 {
+      font-size: 1.2rem;
+      margin-bottom: 0.2rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .bounce-card .topic {
+      font-size: 0.8rem;
+      color: #C4B5FD;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* networking canvas etc (unchanged) */
+    .networking-graph {
+      position: relative;
+      min-height: 400px;
+      margin: 3rem 0;
+    }
+    #nodeCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .student-cluster, .expert-cluster {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      width: 200px;
+    }
+    .student-cluster { float: left; }
+    .expert-cluster { float: right; }
+    .node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #12121A;
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 1px solid #7C3AED;
+    }
+    .node-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #2a2a35;
+      border: 2px solid #7C3AED;
+      box-shadow: 0 0 20px #7C3AED;
+    }
+    .node-label {
+      font-family: 'Playfair Display', serif;
+      color: white;
+      margin-top: 0.5rem;
+    }
 
     .quiz-star {
       font-size: 5rem;
@@ -618,7 +609,6 @@ export default function BounceCards({
       margin: 2rem 0;
     }
 
-    /* helper */
     .text-lavender { color: #C4B5FD; }
     .text-center { text-align: center; }
     .mt-4 { margin-top: 2rem; }
@@ -665,7 +655,6 @@ export default function BounceCards({
     <h2 class="section-title">Our Sponsors</h2>
     <div class="marquee">
       <div class="marquee-track">
-        <!-- 8 placeholders repeated twice for seamless loop -->
         <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
         <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
         <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
@@ -684,7 +673,6 @@ export default function BounceCards({
       <button class="btn-outline-purple" id="scrollRight">→</button>
     </div>
     <div class="scroll-container" id="exhibitorScroll">
-      <!-- 6 exhibitor cards -->
       <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇫🇷</div><h3>France</h3><span class="badge">Innovation</span><p>Leading edtech & culture</p></div>
       <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇯🇵</div><h3>Japan</h3><span class="badge purple">Robotics</span><p>Future of work</p></div>
       <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇧🇷</div><h3>Brazil</h3><span class="badge">Sustainability</span><p>Green tech</p></div>
@@ -695,16 +683,16 @@ export default function BounceCards({
     <!-- TODO: Replace with real exhibitor data -->
   </section>
 
-  <!-- CONFERENCES -->
+  <!-- CONFERENCES & TALKS (Bounce Cards Integration) -->
   <section id="conferences" class="container fade-up">
     <h2 class="section-title">Conferences & Talks</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 2rem;">
-      <div class="card-dark tilt-card"><div class="node-avatar" style="margin:0 auto 1rem;"></div><h4>Dr. Sarah Chen</h4><div class="text-lavender" style="font-weight:600;">Future of Learning</div><div>Sept 12 · 10:00</div><p style="margin-top:1rem;">Neuroscience and global education.</p></div>
-      <div class="card-dark tilt-card"><div class="node-avatar" style="margin:0 auto 1rem;"></div><h4>Amara Okafor</h4><div class="text-lavender" style="font-weight:600;">Cultural Diplomacy</div><div>Sept 12 · 14:00</div><p>Art as a bridge between nations.</p></div>
-      <div class="card-dark tilt-card"><div class="node-avatar" style="margin:0 auto 1rem;"></div><h4>Marco Valli</h4><div class="text-lavender" style="font-weight:600;">Startup Ecosystems</div><div>Sept 13 · 11:30</div><p>From local to global.</p></div>
-      <div class="card-dark tilt-card"><div class="node-avatar" style="margin:0 auto 1rem;"></div><h4>Yuki Tanaka</h4><div class="text-lavender" style="font-weight:600;">Tech & Tradition</div><div>Sept 13 · 16:00</div><p>Preserving heritage in digital age.</p></div>
+    <div class="section-subtitle">speakers that inspire</div>
+    
+    <!-- Bounce cards container (vanilla JS implementation of the React component) -->
+    <div class="bounce-container" id="bounceContainer">
+      <!-- Cards will be generated here by JS -->
     </div>
-    <!-- TODO: Replace with real speaker data -->
+    <!-- TODO: Replace with real speaker data and images -->
   </section>
 
   <!-- NETWORKING SPACE -->
@@ -779,14 +767,13 @@ export default function BounceCards({
 
   <script>
     (function() {
-      // ----- NAVBAR SCROLL -----
+      // ----- NAvbar scroll & hamburger (unchanged) -----
       const navbar = document.getElementById('navbar');
       window.addEventListener('scroll', () => {
         if (window.scrollY > 50) navbar.classList.add('scrolled');
         else navbar.classList.remove('scrolled');
       });
 
-      // ----- HAMBURGER MENU -----
       const hamburger = document.getElementById('hamburger');
       const navLinks = document.getElementById('navLinks');
       hamburger.addEventListener('click', () => {
@@ -819,7 +806,7 @@ export default function BounceCards({
         scrollContainer.scrollBy({ left: 340, behavior: 'smooth' });
       });
 
-      // ----- 3D TILT (exhibitor & conference cards) -----
+      // ----- 3D TILT (exhibitor cards) -----
       const tiltCards = document.querySelectorAll('.tilt-card');
       tiltCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
@@ -837,7 +824,7 @@ export default function BounceCards({
         });
       });
 
-      // ----- NETWORKING CANVAS (animated dashed lines) -----
+      // ----- NETWORKING CANVAS (animated lines) -----
       const canvas = document.getElementById('nodeCanvas');
       const ctx = canvas?.getContext('2d');
       function drawLines() {
@@ -876,7 +863,7 @@ export default function BounceCards({
       if (canvas) drawLines();
       window.addEventListener('resize', () => { if(canvas) drawLines(); });
 
-      // ----- TABS (simple toggle) -----
+      // ----- TABS -----
       const tabConf = document.getElementById('tabConf');
       const tabNet = document.getElementById('tabNet');
       tabConf.addEventListener('click', () => {
@@ -888,14 +875,118 @@ export default function BounceCards({
         tabConf.classList.remove('active');
       });
 
-      // ----- FORM PREVENT SUBMIT (demo) -----
+      // ----- FORM PREVENT SUBMIT -----
       document.getElementById('registerForm').addEventListener('submit', (e) => {
         e.preventDefault();
         alert('Thank you! (Demo – form not connected)');
       });
+
+      // ----- BOUNCE CARDS (Conferences) : vanilla JS version of React component -----
+      const container = document.getElementById('bounceContainer');
+      // Speaker data (placeholders)
+      const speakers = [
+        { name: 'Dr. Sarah Chen', topic: 'Future of Learning', country: '🇺🇸' },
+        { name: 'Amara Okafor', topic: 'Cultural Diplomacy', country: '🇳🇬' },
+        { name: 'Marco Valli', topic: 'Startup Ecosystems', country: '🇮🇹' },
+        { name: 'Yuki Tanaka', topic: 'Tech & Tradition', country: '🇯🇵' },
+        { name: 'Elena Petrova', topic: 'Quantum Ethics', country: '🇷🇺' }
+      ];
+
+      // Transform styles matching the React component (rotate + translate)
+      const transformStyles = [
+        'rotate(10deg) translate(-170px)',
+        'rotate(5deg) translate(-85px)',
+        'rotate(-3deg) translate(0px)',
+        'rotate(-10deg) translate(85px)',
+        'rotate(2deg) translate(170px)'
+      ];
+
+      // Create cards
+      speakers.forEach((speaker, idx) => {
+        const card = document.createElement('div');
+        card.className = `bounce-card card-${idx}`;
+        card.setAttribute('data-index', idx);
+        card.style.transform = transformStyles[idx];
+        card.style.zIndex = idx; // initial stack order
+
+        // Content
+        card.innerHTML = `
+          <div class="speaker-img"></div>
+          <h4>${speaker.name}</h4>
+          <div class="topic">${speaker.topic}</div>
+          <div style="font-size:0.8rem; margin-top:0.3rem;">${speaker.country}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Store original transforms
+      const cards = document.querySelectorAll('.bounce-card');
+      cards.forEach((card, i) => {
+        card.dataset.originalTransform = transformStyles[i];
+      });
+
+      // Helper: replace rotation with rotate(0deg) in a transform string
+      function removeRotation(transformStr) {
+        return transformStr.replace(/rotate\([^)]*\)/, 'rotate(0deg)');
+      }
+
+      // Helper: add offset to translateX (handles 'translate(XXpx)' or 'translate(XXpx) ...')
+      function addOffsetToTranslate(transformStr, offset) {
+        const translateRegex = /translate\(([-0-9.]+)px\)/;
+        const match = transformStr.match(translateRegex);
+        if (match) {
+          const currentX = parseFloat(match[1]);
+          const newX = currentX + offset;
+          return transformStr.replace(translateRegex, `translate(${newX}px)`);
+        } else {
+          // If no translate, add one at the beginning (simplified)
+          return `translate(${offset}px) ` + transformStr;
+        }
+      }
+
+      // Mouseenter handler
+      function onCardEnter(e) {
+        const hoveredCard = e.currentTarget;
+        const hoveredIdx = parseInt(hoveredCard.dataset.index);
+
+        cards.forEach((card, i) => {
+          const original = card.dataset.originalTransform;
+          let newTransform;
+
+          if (i === hoveredIdx) {
+            // Hovered card: remove rotation, keep translation
+            newTransform = removeRotation(original);
+          } else {
+            // Sibling: push left or right
+            const offset = i < hoveredIdx ? -120 : 120; // 120px shift
+            newTransform = addOffsetToTranslate(original, offset);
+          }
+
+          card.style.transform = newTransform;
+          // bring hovered card to front
+          if (i === hoveredIdx) card.style.zIndex = 100;
+          else card.style.zIndex = i;
+        });
+      }
+
+      // Mouseleave handler: reset all to original transforms
+      function onCardLeave() {
+        cards.forEach((card, i) => {
+          card.style.transform = card.dataset.originalTransform;
+          card.style.zIndex = i;
+        });
+      }
+
+      // Attach listeners
+      cards.forEach(card => {
+        card.addEventListener('mouseenter', onCardEnter);
+        card.addEventListener('mouseleave', onCardLeave);
+      });
+
     })();
   </script>
-  <!-- extra todo comments inside HTML -->
+  <!-- TODO comments inside HTML -->
   <!-- TODO: Replace 'YOUR_LOGO_HERE.png' with actual logo files throughout -->
   <!-- TODO: Replace sponsor boxes, exhibitor flags, speaker photos with real content -->
   <!-- TODO: Connect registration to backend -->
