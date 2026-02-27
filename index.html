@@ -100,7 +100,7 @@
       pointer-events: none;
       z-index: 1;
       opacity: 0.04;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.2"/></svg>');
+      background-image: url(ws1.jpg);
       background-repeat: repeat;
     }
 
@@ -187,7 +187,7 @@
       }
     }
 
-    /* ----- HERO (unchanged) ----- */
+    /* ----- HERO with background image ----- */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -196,6 +196,23 @@
       text-align: center;
       position: relative;
       overflow: hidden;
+      /* Background image – replace URL with your own */
+      background-image: url('https://images.unsplash.com/photo-1540575467065-25c8a6f8b9d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed; /* optional parallax effect */
+    }
+
+    /* Dark overlay for text readability */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 15, 0.6); /* dark overlay */
+      z-index: 1;
     }
 
     .hero-orb {
@@ -206,16 +223,19 @@
       height: 100%;
       background: radial-gradient(circle at 50% 100%, #3B0764, #7C3AED, #E0C8FF);
       filter: blur(90px);
-      opacity: 0.5;
+      opacity: 0.3; /* reduced to let image show through */
       transform: translateY(20%);
       transition: transform 0.1s ease-out;
-      z-index: -1;
+      z-index: 2;
+      pointer-events: none;
     }
 
     .hero-content {
       max-width: 1000px;
       padding: 2rem;
       animation: fadeIn 1.2s ease-out;
+      position: relative;
+      z-index: 3; /* above overlays */
     }
 
     .hero-logo {
@@ -243,7 +263,7 @@
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: 2rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.9); /* slightly brighter */
       margin-bottom: 2rem;
     }
 
@@ -405,7 +425,7 @@
       width: 100%;
       max-width: 950px;
       height: 500px; /* will adjust via media queries */
-      margin: 1 auto;
+      margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -486,7 +506,7 @@
 
     /* Tablet (≤700px) */
     @media (max-width: 700px) {
-      .bounce-container { height: 460px; }
+      .bounce-container { height: 480px; }
       .bounce-card {
         width: 170px;
         padding: 1.4rem 1rem;
@@ -504,7 +524,7 @@
 
     /* Phone (≤480px) – extra small for perfect centering with side space */
     @media (max-width: 480px) {
-      .bounce-container { height: 360px; }
+      .bounce-container { height: 370px; }
       .bounce-card {
         width: 150px;
         padding: 0.9rem 0.5rem;
@@ -706,7 +726,7 @@
     </div>
   </nav>
 
-  <!-- HERO -->
+  <!-- HERO with background image -->
   <section id="hero" class="hero">
     <div class="hero-orb" id="orb"></div>
     <div class="hero-content">
