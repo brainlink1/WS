@@ -22,12 +22,12 @@
       justify-content: center;
       font-family: 'Lato', sans-serif;
       color: rgba(255,255,255,0.8);
-      padding: 2rem;
+      padding: 1rem;
       position: relative;
       overflow-x: hidden;
     }
 
-    /* ----- GLOWING PURPLE ORB (global background) ----- */
+    /* background effects (unchanged) */
     .orb-bg {
       position: fixed;
       top: 0;
@@ -48,7 +48,6 @@
       100% { opacity: 0.8; filter: blur(80px); }
     }
 
-    /* ----- GRAIN TEXTURE ----- */
     .grain {
       position: fixed;
       top: 0;
@@ -62,10 +61,9 @@
       background-repeat: repeat;
     }
 
-    /* ----- SECTION HEADERS ----- */
     .section-title {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-size: clamp(2rem, 7vw, 4.5rem);
       font-style: italic;
       color: #FFFFFF;
       text-shadow: 0 0 15px #7C3AED80;
@@ -81,10 +79,11 @@
       text-transform: uppercase;
       letter-spacing: 0.15em;
       color: #C4B5FD;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
       text-align: center;
       position: relative;
       z-index: 2;
+      font-size: clamp(0.7rem, 3vw, 1rem);
     }
 
     /* ----- BOUNCE CARDS CONTAINER ----- */
@@ -92,7 +91,7 @@
       position: relative;
       width: 100%;
       max-width: 950px;
-      height: 520px;
+      height: 500px; /* will adjust via media queries */
       margin: 0 auto;
       display: flex;
       justify-content: center;
@@ -102,7 +101,6 @@
 
     .bounce-card {
       position: absolute;
-      width: 240px;
       background: #12121A;
       border-radius: 1.8rem;
       border: 1px solid #2a2a35;
@@ -112,8 +110,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.8rem 1.2rem;
-      color: white;
       text-align: center;
       backface-visibility: hidden;
       cursor: pointer;
@@ -125,18 +121,15 @@
     }
 
     .bounce-card .speaker-img {
-      width: 100px;
-      height: 100px;
       border-radius: 50%;
       background: linear-gradient(145deg, #3B0764, #7C3AED);
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
       border: 3px solid #C4B5FD;
       box-shadow: 0 0 25px #7C3AED;
     }
 
     .bounce-card h4 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
       font-weight: 700;
       color: white;
       margin-bottom: 0.2rem;
@@ -145,42 +138,43 @@
     .bounce-card .topic {
       font-family: 'Lato', sans-serif;
       font-weight: 600;
-      font-size: 0.9rem;
       color: #C4B5FD;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin: 0.3rem 0;
+      margin: 0.2rem 0;
     }
 
     .bounce-card .datetime {
       font-family: 'Lato', sans-serif;
       font-weight: 300;
-      font-size: 0.8rem;
       color: rgba(255,255,255,0.6);
-      margin: 0.2rem 0;
     }
 
     .bounce-card .bio {
       font-family: 'Lato', sans-serif;
       font-weight: 300;
-      font-size: 0.8rem;
       color: rgba(255,255,255,0.7);
-      margin-top: 0.5rem;
       line-height: 1.4;
-      max-width: 200px;
     }
 
-    .bounce-card .country {
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-      opacity: 0.8;
+    /* ----- RESPONSIVE SIZING (phones first) ----- */
+    /* Default (desktop) */
+    .bounce-card {
+      width: 240px;
+      padding: 1.8rem 1.2rem;
     }
+    .bounce-card .speaker-img {
+      width: 100px;
+      height: 100px;
+    }
+    .bounce-card h4 { font-size: 1.3rem; }
+    .bounce-card .topic { font-size: 0.9rem; }
+    .bounce-card .datetime,
+    .bounce-card .bio { font-size: 0.8rem; }
 
-    /* ----- RESPONSIVE DESIGN (phones) ----- */
+    /* Tablet (≤700px) */
     @media (max-width: 700px) {
-      .bounce-container {
-        height: 460px;
-      }
+      .bounce-container { height: 460px; }
       .bounce-card {
         width: 200px;
         padding: 1.4rem 1rem;
@@ -188,54 +182,39 @@
       .bounce-card .speaker-img {
         width: 80px;
         height: 80px;
-        margin-bottom: 1rem;
+        margin-bottom: 0.9rem;
       }
-      .bounce-card h4 {
-        font-size: 1.1rem;
-      }
-      .bounce-card .topic {
-        font-size: 0.8rem;
-      }
+      .bounce-card h4 { font-size: 1.2rem; }
+      .bounce-card .topic { font-size: 0.8rem; }
       .bounce-card .datetime,
-      .bounce-card .bio,
-      .bounce-card .country {
-        font-size: 0.7rem;
-      }
+      .bounce-card .bio { font-size: 0.75rem; }
     }
 
+    /* Phone (≤480px) – smaller cards and reduced translation */
     @media (max-width: 480px) {
-      .bounce-container {
-        height: 400px;
-      }
+      .bounce-container { height: 380px; }
       .bounce-card {
-        width: 160px;
-        padding: 1rem 0.8rem;
+        width: 140px;
+        padding: 1rem 0.6rem;
         border-radius: 1.2rem;
       }
       .bounce-card .speaker-img {
         width: 60px;
         height: 60px;
         border-width: 2px;
-        margin-bottom: 0.7rem;
+        margin-bottom: 0.6rem;
       }
-      .bounce-card h4 {
-        font-size: 1rem;
-      }
-      .bounce-card .topic {
-        font-size: 0.7rem;
-        letter-spacing: 0.05em;
-      }
+      .bounce-card h4 { font-size: 1rem; }
+      .bounce-card .topic { font-size: 0.65rem; letter-spacing: 0.05em; }
       .bounce-card .datetime,
-      .bounce-card .bio,
-      .bounce-card .country {
-        font-size: 0.65rem;
-      }
+      .bounce-card .bio { font-size: 0.6rem; }
+      .bounce-card .bio { max-width: 120px; }
     }
 
     .info-note {
-      margin-top: 3rem;
+      margin-top: 2rem;
       color: #C4B5FD;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       text-align: center;
       z-index: 2;
       position: relative;
@@ -246,21 +225,19 @@
       border: 0;
       height: 1px;
       background: linear-gradient(90deg, transparent, #7C3AED, transparent);
-      margin: 2rem auto;
+      margin: 1.5rem auto;
       z-index: 2;
       position: relative;
     }
   </style>
 </head>
 <body>
-  <!-- background effects -->
   <div class="orb-bg"></div>
   <div class="grain"></div>
 
   <h2 class="section-title">Conferences & Talks</h2>
   <div class="section-subtitle">speakers that inspire</div>
 
-  <!-- BOUNCE CARDS CONTAINER -->
   <div class="bounce-container" id="bounceContainer"></div>
 
   <hr />
@@ -270,7 +247,6 @@
 
   <script>
     (function() {
-      // ----- SPEAKER DATA (replace with your own) -----
       const speakers = [
         {
           name: 'Dr. Sarah Chen',
@@ -309,25 +285,28 @@
         }
       ];
 
-      // Transform styles (rotate + translate) – now responsive offsets will be set via JS based on screen width
-      const isMobile = window.innerWidth <= 480;
-      const isTablet = window.innerWidth <= 700 && window.innerWidth > 480;
-      
-      // Base translation amounts (in pixels) for desktop, then scale down for mobile
-      let desktopOffsets = [-190, -100, 0, 100, 190];
-      let mobileOffsets = [-120, -70, 0, 70, 120];    // for 480px and below
-      let tabletOffsets = [-160, -85, 0, 85, 160];    // for between 481px and 700px
+      // Translation offsets (in pixels) based on screen width
+      function getOffsets() {
+        const width = window.innerWidth;
+        if (width <= 480) {
+          return [-80, -40, 0, 40, 80];     // phone: smaller spread
+        } else if (width <= 700) {
+          return [-140, -70, 0, 70, 140];   // tablet
+        } else {
+          return [-190, -100, 0, 100, 190]; // desktop
+        }
+      }
 
-      let offsets = desktopOffsets;
-      if (isMobile) offsets = mobileOffsets;
-      else if (isTablet) offsets = tabletOffsets;
+      // Rotation values (keep consistent)
+      const rotValues = [12, 6, -2, -8, 4];
 
-      // Build transform strings with rotation
-      const transformStyles = offsets.map((offset, idx) => {
-        // Add slight rotation variation per card (similar to original)
-        const rotValues = [12, 6, -2, -8, 4];
-        return `rotate(${rotValues[idx]}deg) translate(${offset}px)`;
-      });
+      // Build transform strings
+      function buildTransformStyles(offsets) {
+        return offsets.map((offset, idx) => `rotate(${rotValues[idx]}deg) translate(${offset}px)`);
+      }
+
+      let currentOffsets = getOffsets();
+      let transformStyles = buildTransformStyles(currentOffsets);
 
       const container = document.getElementById('bounceContainer');
 
@@ -337,7 +316,7 @@
         card.className = `bounce-card card-${idx}`;
         card.setAttribute('data-index', idx);
         card.style.transform = transformStyles[idx];
-        card.style.zIndex = idx; // initial order
+        card.style.zIndex = idx;
 
         card.innerHTML = `
           <div class="speaker-img"></div>
@@ -345,7 +324,7 @@
           <div class="topic">${speaker.topic}</div>
           <div class="datetime">${speaker.datetime}</div>
           <div class="bio">${speaker.bio}</div>
-          <div class="country">${speaker.country}</div>
+          <div class="country" style="font-size:0.8rem; margin-top:0.3rem;">${speaker.country}</div>
         `;
 
         container.appendChild(card);
@@ -358,12 +337,12 @@
         card.dataset.originalTransform = transformStyles[i];
       });
 
-      // Helper: remove rotation from transform string
+      // Helper: remove rotation
       function removeRotation(transformStr) {
         return transformStr.replace(/rotate\([^)]*\)/, 'rotate(0deg)');
       }
 
-      // Helper: add offset to translateX (handles 'translate(XXpx)' or prepends if none)
+      // Helper: add offset to translate
       function addOffsetToTranslate(transformStr, offset) {
         const translateRegex = /translate\(([-0-9.]+)px\)/;
         const match = transformStr.match(translateRegex);
@@ -372,19 +351,18 @@
           const newX = currentX + offset;
           return transformStr.replace(translateRegex, `translate(${newX}px)`);
         } else {
-          // If no translate, add one at the beginning
           return `translate(${offset}px) ` + transformStr;
         }
       }
 
-      // Determine hover offset based on screen size
+      // Hover offset based on screen size
       function getHoverOffset() {
-        if (window.innerWidth <= 480) return 90;      // smaller shift on phones
-        if (window.innerWidth <= 700) return 120;     // medium shift on tablets
-        return 140;                                    // desktop shift
+        const width = window.innerWidth;
+        if (width <= 480) return 50;    // phone: smaller shift
+        if (width <= 700) return 100;   // tablet
+        return 140;                      // desktop
       }
 
-      // Mouseenter handler
       function onCardEnter(e) {
         const hoveredCard = e.currentTarget;
         const hoveredIdx = parseInt(hoveredCard.dataset.index);
@@ -395,21 +373,18 @@
           let newTransform;
 
           if (i === hoveredIdx) {
-            // Hovered card: remove rotation, keep translation
             newTransform = removeRotation(original);
-            card.style.zIndex = 100; // bring to front
+            card.style.zIndex = 100;
           } else {
-            // Sibling: push left or right
             const offset = i < hoveredIdx ? -offsetAmount : offsetAmount;
             newTransform = addOffsetToTranslate(original, offset);
-            card.style.zIndex = i; // restore default order
+            card.style.zIndex = i;
           }
 
           card.style.transform = newTransform;
         });
       }
 
-      // Mouseleave handler: reset all to original transforms
       function onCardLeave() {
         cards.forEach((card, i) => {
           card.style.transform = card.dataset.originalTransform;
@@ -417,33 +392,21 @@
         });
       }
 
-      // Attach listeners
       cards.forEach(card => {
         card.addEventListener('mouseenter', onCardEnter);
         card.addEventListener('mouseleave', onCardLeave);
       });
 
-      // Optional: update on window resize (recalculate transforms if needed)
-      window.addEventListener('resize', function() {
-        // Determine new offsets
-        const newIsMobile = window.innerWidth <= 480;
-        const newIsTablet = window.innerWidth <= 700 && window.innerWidth > 480;
-        let newOffsets = desktopOffsets;
-        if (newIsMobile) newOffsets = mobileOffsets;
-        else if (newIsTablet) newOffsets = tabletOffsets;
-
-        // Only update if offsets changed
-        const currentOffsets = offsets;
+      // Update on resize
+      window.addEventListener('resize', () => {
+        const newOffsets = getOffsets();
+        // Check if offsets changed
         if (JSON.stringify(newOffsets) !== JSON.stringify(currentOffsets)) {
-          offsets = newOffsets;
-          // rebuild transform styles
-          const rotValues = [12, 6, -2, -8, 4];
-          const newTransformStyles = offsets.map((offset, idx) => {
-            return `rotate(${rotValues[idx]}deg) translate(${offset}px)`;
-          });
+          currentOffsets = newOffsets;
+          const newTransformStyles = buildTransformStyles(currentOffsets);
           cards.forEach((card, i) => {
             card.dataset.originalTransform = newTransformStyles[i];
-            if (!card.matches(':hover')) { // only reset if not hovered
+            if (!card.matches(':hover')) {
               card.style.transform = newTransformStyles[i];
             }
           });
