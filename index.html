@@ -176,18 +176,59 @@
       opacity: 0.8;
     }
 
-    /* responsive adjustments */
+    /* ----- RESPONSIVE DESIGN (phones) ----- */
     @media (max-width: 700px) {
       .bounce-container {
-        height: 480px;
+        height: 460px;
       }
       .bounce-card {
         width: 200px;
-        padding: 1.2rem;
+        padding: 1.4rem 1rem;
       }
       .bounce-card .speaker-img {
         width: 80px;
         height: 80px;
+        margin-bottom: 1rem;
+      }
+      .bounce-card h4 {
+        font-size: 1.1rem;
+      }
+      .bounce-card .topic {
+        font-size: 0.8rem;
+      }
+      .bounce-card .datetime,
+      .bounce-card .bio,
+      .bounce-card .country {
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .bounce-container {
+        height: 400px;
+      }
+      .bounce-card {
+        width: 160px;
+        padding: 1rem 0.8rem;
+        border-radius: 1.2rem;
+      }
+      .bounce-card .speaker-img {
+        width: 60px;
+        height: 60px;
+        border-width: 2px;
+        margin-bottom: 0.7rem;
+      }
+      .bounce-card h4 {
+        font-size: 1rem;
+      }
+      .bounce-card .topic {
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+      }
+      .bounce-card .datetime,
+      .bounce-card .bio,
+      .bounce-card .country {
+        font-size: 0.65rem;
       }
     }
 
@@ -268,14 +309,25 @@
         }
       ];
 
-      // Transform styles (rotate + translate) – adjust as needed
-      const transformStyles = [
-        'rotate(12deg) translate(-190px)',
-        'rotate(6deg) translate(-100px)',
-        'rotate(-2deg) translate(0px)',
-        'rotate(-8deg) translate(100px)',
-        'rotate(4deg) translate(190px)'
-      ];
+      // Transform styles (rotate + translate) – now responsive offsets will be set via JS based on screen width
+      const isMobile = window.innerWidth <= 480;
+      const isTablet = window.innerWidth <= 700 && window.innerWidth > 480;
+      
+      // Base translation amounts (in pixels) for desktop, then scale down for mobile
+      let desktopOffsets = [-190, -100, 0, 100, 190];
+      let mobileOffsets = [-120, -70, 0, 70, 120];    // for 480px and below
+      let tabletOffsets = [-160, -85, 0, 85, 160];    // for between 481px and 700px
+
+      let offsets = desktopOffsets;
+      if (isMobile) offsets = mobileOffsets;
+      else if (isTablet) offsets = tabletOffsets;
+
+      // Build transform strings with rotation
+      const transformStyles = offsets.map((offset, idx) => {
+        // Add slight rotation variation per card (similar to original)
+        const rotValues = [12, 6, -2, -8, 4];
+        return `rotate(${rotValues[idx]}deg) translate(${offset}px)`;
+      });
 
       const container = document.getElementById('bounceContainer');
 
@@ -325,10 +377,18 @@
         }
       }
 
+      // Determine hover offset based on screen size
+      function getHoverOffset() {
+        if (window.innerWidth <= 480) return 90;      // smaller shift on phones
+        if (window.innerWidth <= 700) return 120;     // medium shift on tablets
+        return 140;                                    // desktop shift
+      }
+
       // Mouseenter handler
       function onCardEnter(e) {
         const hoveredCard = e.currentTarget;
         const hoveredIdx = parseInt(hoveredCard.dataset.index);
+        const offsetAmount = getHoverOffset();
 
         cards.forEach((card, i) => {
           const original = card.dataset.originalTransform;
@@ -339,8 +399,8 @@
             newTransform = removeRotation(original);
             card.style.zIndex = 100; // bring to front
           } else {
-            // Sibling: push left or right by 140px
-            const offset = i < hoveredIdx ? -140 : 140;
+            // Sibling: push left or right
+            const offset = i < hoveredIdx ? -offsetAmount : offsetAmount;
             newTransform = addOffsetToTranslate(original, offset);
             card.style.zIndex = i; // restore default order
           }
@@ -362,6 +422,34 @@
         card.addEventListener('mouseenter', onCardEnter);
         card.addEventListener('mouseleave', onCardLeave);
       });
+
+      // Optional: update on window resize (recalculate transforms if needed)
+      window.addEventListener('resize', function() {
+        // Determine new offsets
+        const newIsMobile = window.innerWidth <= 480;
+        const newIsTablet = window.innerWidth <= 700 && window.innerWidth > 480;
+        let newOffsets = desktopOffsets;
+        if (newIsMobile) newOffsets = mobileOffsets;
+        else if (newIsTablet) newOffsets = tabletOffsets;
+
+        // Only update if offsets changed
+        const currentOffsets = offsets;
+        if (JSON.stringify(newOffsets) !== JSON.stringify(currentOffsets)) {
+          offsets = newOffsets;
+          // rebuild transform styles
+          const rotValues = [12, 6, -2, -8, 4];
+          const newTransformStyles = offsets.map((offset, idx) => {
+            return `rotate(${rotValues[idx]}deg) translate(${offset}px)`;
+          });
+          cards.forEach((card, i) => {
+            card.dataset.originalTransform = newTransformStyles[i];
+            if (!card.matches(':hover')) { // only reset if not hovered
+              card.style.transform = newTransformStyles[i];
+            }
+          });
+        }
+      });
+
     })();
   </script>
 </body>
