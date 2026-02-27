@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World Summit · Conferences Bounce Cards</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;400italic&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>World Summit · 2nd Edition</title>
+  <!-- Google Fonts (only external resource) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    /* ----- RESET & GLOBAL ----- */
     * {
       margin: 0;
       padding: 0;
@@ -15,19 +16,60 @@
 
     body {
       background-color: #0A0A0F;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      color: rgba(255, 255, 255, 0.8);
       font-family: 'Lato', sans-serif;
-      color: rgba(255,255,255,0.8);
-      padding: 1rem;
-      position: relative;
+      font-weight: 300;
+      line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* background effects (unchanged) */
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .section-title {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-style: italic;
+      text-shadow: 0 0 15px #7C3AED80;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #C4B5FD;
+      margin-bottom: 2.5rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ----- DARK SURFACES & GLOW ----- */
+    .card-dark {
+      background: #12121A;
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+      border: 1px solid #2a2a35;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.8);
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+
+    .card-dark:hover {
+      border-color: #7C3AED;
+      box-shadow: 0 0 30px #7C3AED40;
+    }
+
+    /* ----- GLOWING PURPLE ORB (global background effect) ----- */
     .orb-bg {
       position: fixed;
       top: 0;
@@ -37,17 +79,18 @@
       pointer-events: none;
       z-index: 0;
       background: radial-gradient(circle at 50% 100%, #3B0764 0%, #7C3AED 40%, #E0C8FF 70%, transparent 80%);
-      opacity: 0.5;
-      filter: blur(70px);
-      transform: translateY(25%);
+      opacity: 0.6;
+      filter: blur(60px);
+      transform: translateY(30%);
       animation: orbPulse 12s infinite alternate;
     }
 
     @keyframes orbPulse {
       0% { opacity: 0.4; filter: blur(60px); }
-      100% { opacity: 0.8; filter: blur(80px); }
+      100% { opacity: 0.8; filter: blur(70px); }
     }
 
+    /* grain texture overlay */
     .grain {
       position: fixed;
       top: 0;
@@ -61,32 +104,302 @@
       background-repeat: repeat;
     }
 
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 7vw, 4.5rem);
-      font-style: italic;
-      color: #FFFFFF;
-      text-shadow: 0 0 15px #7C3AED80;
-      margin-bottom: 0.5rem;
-      text-align: center;
-      position: relative;
-      z-index: 2;
+    /* ----- NAVBAR (unchanged) ----- */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      transition: background 0.3s, backdrop-filter 0.3s;
     }
 
-    .section-subtitle {
+    .navbar.scrolled {
+      background: #0A0A0Fcc;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #7C3AED30;
+    }
+
+    .nav-logo {
+      width: 140px;
+      filter: drop-shadow(0 0 8px #ffffff60);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Lato', sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: white;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #7C3AED;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 6px;
+    }
+
+    .hamburger span {
+      width: 30px;
+      height: 2px;
+      background: white;
+      transition: 0.3s;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        position: fixed;
+        top: 80px;
+        right: 2rem;
+        background: #12121A;
+        flex-direction: column;
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid #7C3AED;
+        gap: 1.5rem;
+        transform: translateX(150%);
+        transition: transform 0.3s ease;
+        backdrop-filter: blur(12px);
+      }
+      .nav-links.active {
+        transform: translateX(0);
+      }
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    /* ----- HERO (unchanged) ----- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-orb {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 100%, #3B0764, #7C3AED, #E0C8FF);
+      filter: blur(90px);
+      opacity: 0.5;
+      transform: translateY(20%);
+      transition: transform 0.1s ease-out;
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 1000px;
+      padding: 2rem;
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    .hero-logo {
+      width: 220px;
+      margin-bottom: 2rem;
+      filter: drop-shadow(0 0 20px #ffffff80);
+    }
+
+    .hero-title {
+      font-size: clamp(3.5rem, 15vw, 7rem);
+      line-height: 1;
+      text-shadow: 0 0 30px #7C3AED;
+    }
+
+    .hero-edition {
       font-family: 'Lato', sans-serif;
       font-weight: 300;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
+      font-size: 1.5rem;
+      letter-spacing: 0.3em;
       color: #C4B5FD;
-      margin-bottom: 2rem;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      font-size: clamp(0.7rem, 3vw, 1rem);
+      margin: 1rem 0 0.5rem;
     }
 
-    /* ----- BOUNCE CARDS CONTAINER ----- */
+    .hero-slogan {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 2rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2rem;
+    }
+
+    .hero-date {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      color: #C4B5FD;
+      margin-bottom: 2.5rem;
+      font-size: 1.2rem;
+    }
+
+    .btn-crimson {
+      background: #C8102E;
+      border: none;
+      padding: 1rem 3rem;
+      border-radius: 60px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: white;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      box-shadow: 0 0 20px #C8102E60;
+      transition: 0.3s;
+    }
+
+    .btn-crimson:hover {
+      background: #a00d25;
+      box-shadow: 0 0 40px #C8102E;
+      transform: scale(1.05);
+    }
+
+    .btn-outline-purple {
+      background: transparent;
+      border: 2px solid #7C3AED;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      color: white;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .btn-outline-purple:hover {
+      background: #7C3AED;
+      box-shadow: 0 0 30px #7C3AED;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ----- SPONSOR MARQUEE (unchanged) ----- */
+    .marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 2rem 0;
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      gap: 3rem;
+      animation: scroll 25s linear infinite;
+    }
+
+    .sponsor-item {
+      width: 180px;
+      height: 100px;
+      background: #1E1E2A;
+      border: 1px solid #7C3AED;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #C4B5FD;
+      font-family: 'Lato', sans-serif;
+      box-shadow: 0 0 15px #7C3AED40;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* exhibitor horizontal scroll (unchanged) */
+    .scroll-container {
+      display: flex;
+      gap: 2rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 1rem 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #7C3AED #12121A;
+    }
+    .scroll-container::-webkit-scrollbar {
+      height: 6px;
+    }
+    .scroll-container::-webkit-scrollbar-thumb {
+      background: #7C3AED;
+      border-radius: 10px;
+    }
+
+    .exhibitor-card {
+      min-width: 300px;
+      flex: 0 0 auto;
+      background: #12121A;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #2a2a35;
+      transition: transform 0.2s, border 0.2s;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .exhibitor-card:hover {
+      border-color: #7C3AED;
+      box-shadow: 0 0 40px #7C3AED60;
+    }
+
+    .flag-placeholder {
+      width: 80px;
+      height: 60px;
+      background: linear-gradient(145deg, #3B0764, #7C3AED);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: #C8102E;
+      color: white;
+      margin: 0.5rem 0;
+    }
+
+    .badge.purple {
+      background: #7C3AED;
+    }
+
+    /* ----- BOUNCE CARDS (Conferences) – responsive with phone optimised ----- */
     .bounce-container {
       position: relative;
       width: 100%;
@@ -157,7 +470,6 @@
       line-height: 1.4;
     }
 
-    /* ----- RESPONSIVE SIZING (phones first) ----- */
     /* Default (desktop) */
     .bounce-card {
       width: 240px;
@@ -190,106 +502,467 @@
       .bounce-card .bio { font-size: 0.75rem; }
     }
 
-    /* Phone (≤480px) – smaller cards and reduced translation */
+    /* Phone (≤480px) – extra small for perfect centering with side space */
     @media (max-width: 480px) {
-      .bounce-container { height: 380px; }
+      .bounce-container { height: 340px; }
       .bounce-card {
-        width: 140px;
-        padding: 1rem 0.6rem;
-        border-radius: 1.2rem;
+        width: 120px;
+        padding: 0.9rem 0.5rem;
+        border-radius: 1rem;
       }
       .bounce-card .speaker-img {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-width: 2px;
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.5rem;
       }
-      .bounce-card h4 { font-size: 1rem; }
-      .bounce-card .topic { font-size: 0.65rem; letter-spacing: 0.05em; }
+      .bounce-card h4 { font-size: 0.9rem; }
+      .bounce-card .topic { font-size: 0.55rem; letter-spacing: 0.03em; }
       .bounce-card .datetime,
-      .bounce-card .bio { font-size: 0.6rem; }
-      .bounce-card .bio { max-width: 120px; }
+      .bounce-card .bio { font-size: 0.5rem; }
+      .bounce-card .bio { max-width: 100px; }
+      .bounce-card .country { font-size: 0.55rem; }
     }
 
-    .info-note {
-      margin-top: 2rem;
+    /* networking canvas etc (unchanged) */
+    .networking-graph {
+      position: relative;
+      min-height: 400px;
+      margin: 3rem 0;
+    }
+    #nodeCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .student-cluster, .expert-cluster {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      width: 200px;
+    }
+    .student-cluster { float: left; }
+    .expert-cluster { float: right; }
+    .node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #12121A;
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 1px solid #7C3AED;
+    }
+    .node-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #2a2a35;
+      border: 2px solid #7C3AED;
+      box-shadow: 0 0 20px #7C3AED;
+    }
+    .node-label {
+      font-family: 'Playfair Display', serif;
+      color: white;
+      margin-top: 0.5rem;
+    }
+
+    .quiz-star {
+      font-size: 5rem;
+      display: inline-block;
+      animation: pulseGlow 1.8s infinite alternate;
+      filter: drop-shadow(0 0 20px #7C3AED);
+      margin-bottom: 1rem;
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      100% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 30px #C4B5FD; }
+    }
+
+    /* registration tabs */
+    .tab-switcher {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .tab {
+      font-family: 'Lato', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #C4B5FD;
+      padding-bottom: 0.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab.active {
+      color: white;
+      border-bottom: 2px solid #C8102E;
+    }
+
+    .form-card {
+      background: #12121A;
+      border-radius: 2rem;
+      padding: 2.5rem;
+      border: 1px solid #7C3AED;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      font-family: 'Lato', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
       color: #C4B5FD;
       font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      background: #0A0A0F;
+      border: 1px solid #333;
+      padding: 1rem;
+      border-radius: 1rem;
+      font-family: 'Lato', sans-serif;
+      color: white;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: #7C3AED;
+      box-shadow: 0 0 20px #7C3AED80;
+    }
+
+    footer {
+      background: #0A0A0F;
+      border-top: 2px solid #7C3AED;
+      padding: 3rem 2rem;
       text-align: center;
-      z-index: 2;
-      position: relative;
+    }
+    .footer-logo {
+      width: 140px;
+      filter: drop-shadow(0 0 10px #ffffff80);
+      margin-bottom: 1rem;
+    }
+    .social-icons {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #12121A;
+      border: 1px solid #7C3AED;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
     }
 
     hr {
-      width: 80%;
       border: 0;
       height: 1px;
       background: linear-gradient(90deg, transparent, #7C3AED, transparent);
-      margin: 1.5rem auto;
-      z-index: 2;
-      position: relative;
+      margin: 2rem 0;
     }
+
+    .text-lavender { color: #C4B5FD; }
+    .text-center { text-align: center; }
+    .mt-4 { margin-top: 2rem; }
   </style>
 </head>
 <body>
+  <!-- fixed glowing orb + grain -->
   <div class="orb-bg"></div>
   <div class="grain"></div>
 
-  <h2 class="section-title">Conferences & Talks</h2>
-  <div class="section-subtitle">speakers that inspire</div>
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='60' viewBox='0 0 200 60'%3E%3Crect width='200' height='60' fill='%2312121A' rx='10' /%3E%3Ctext x='20' y='40' fill='%23C4B5FD' font-family='Lato' font-weight='300' font-size='24'%3EWORLD SUMMIT%3C/text%3E%3C/svg%3E" alt="World Summit Logo" class="nav-logo">
+    <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#sponsors">Sponsors</a></li>
+      <li><a href="#exhibitors">Exhibitors</a></li>
+      <li><a href="#conferences">Talks</a></li>
+      <li><a href="#networking">Network</a></li>
+      <li><a href="#register">Register</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
 
-  <div class="bounce-container" id="bounceContainer"></div>
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-orb" id="orb"></div>
+    <div class="hero-content">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='100' viewBox='0 0 300 100'%3E%3Crect width='300' height='100' fill='%2312121A' rx='20' /%3E%3Ctext x='50' y='65' fill='%23C4B5FD' font-family='Playfair Display' font-size='40' font-weight='700'%3EWORLD SUMMIT%3C/text%3E%3C/svg%3E" alt="World Summit Logo Large" class="hero-logo">
+      <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
+      <h1 class="hero-title">WORLD SUMMIT</h1>
+      <div class="hero-edition">2ND EDITION</div>
+      <div class="hero-slogan">[YOUR SLOGAN HERE] — bridging cultures, creating futures</div>
+      <div class="hero-date">SEPTEMBER 12–14 · BERLIN, GERMANY</div>
+      <button class="btn-crimson">Register Now</button>
+    </div>
+  </section>
 
-  <hr />
-  <div class="info-note">
-    ✦ Hover over any card to see the interactive fan effect ✦
-  </div>
+  <!-- SPONSORS -->
+  <section id="sponsors" class="container fade-up">
+    <h2 class="section-title">Our Sponsors</h2>
+    <div class="marquee">
+      <div class="marquee-track">
+        <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
+        <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
+        <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
+        <div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div><div class="sponsor-item">Sponsor Logo</div>
+      </div>
+    </div>
+    <!-- TODO: Replace placeholder boxes with real sponsor logos -->
+  </section>
+
+  <!-- EXHIBITORS -->
+  <section id="exhibitors" class="container fade-up">
+    <h2 class="section-title">Exhibitors</h2>
+    <div class="section-subtitle">meet global innovators</div>
+    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+      <button class="btn-outline-purple" id="scrollLeft">←</button>
+      <button class="btn-outline-purple" id="scrollRight">→</button>
+    </div>
+    <div class="scroll-container" id="exhibitorScroll">
+      <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇫🇷</div><h3>France</h3><span class="badge">Innovation</span><p>Leading edtech & culture</p></div>
+      <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇯🇵</div><h3>Japan</h3><span class="badge purple">Robotics</span><p>Future of work</p></div>
+      <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇧🇷</div><h3>Brazil</h3><span class="badge">Sustainability</span><p>Green tech</p></div>
+      <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇬🇭</div><h3>Ghana</h3><span class="badge purple">Creative</span><p>Afrofuturism</p></div>
+      <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇩🇪</div><h3>Germany</h3><span class="badge">Engineering</span><p>Industry 4.0</p></div>
+      <div class="exhibitor-card tilt-card" data-tilt><div class="flag-placeholder">🇨🇦</div><h3>Canada</h3><span class="badge">AI ethics</span><p>Inclusive design</p></div>
+    </div>
+    <!-- TODO: Replace with real exhibitor data -->
+  </section>
+
+  <!-- CONFERENCES & TALKS (Bounce Cards) -->
+  <section id="conferences" class="container fade-up">
+    <h2 class="section-title">Conferences & Talks</h2>
+    <div class="section-subtitle">speakers that inspire</div>
+    
+    <!-- Bounce cards container (populated by JS) -->
+    <div class="bounce-container" id="bounceContainer"></div>
+    <!-- TODO: Replace with real speaker data and images -->
+  </section>
+
+  <!-- NETWORKING SPACE -->
+  <section id="networking" class="container fade-up">
+    <h2 class="section-title">Networking Space</h2>
+    <div class="section-subtitle">connect · exchange · grow</div>
+    <div class="networking-graph">
+      <canvas id="nodeCanvas"></canvas>
+      <div class="student-cluster">
+        <div class="node" id="student1"><div class="node-avatar"></div><span class="node-label">Maria (Student)</span></div>
+        <div class="node" id="student2"><div class="node-avatar"></div><span class="node-label">James (Student)</span></div>
+        <div class="node" id="student3"><div class="node-avatar"></div><span class="node-label">Lea (Student)</span></div>
+        <p style="color:#C4B5FD; margin-top:1rem;">Students</p>
+      </div>
+      <div class="expert-cluster">
+        <div class="node" id="expert1"><div class="node-avatar"></div><span class="node-label">Dr. Keller (AI)</span></div>
+        <div class="node" id="expert2"><div class="node-avatar"></div><span class="node-label">Elena (Policy)</span></div>
+        <div class="node" id="expert3"><div class="node-avatar"></div><span class="node-label">Raj (Finance)</span></div>
+        <p style="color:#C4B5FD; margin-top:1rem;">Experts</p>
+      </div>
+    </div>
+    <div style="text-align: center; clear: both; padding-top: 2rem;">
+      <button class="btn-outline-purple">Reserve Your Spot</button>
+    </div>
+    <!-- TODO: Replace with real expert profiles -->
+  </section>
+
+  <!-- QUIZ & GIVEAWAY -->
+  <section id="quiz" class="container fade-up" style="background: #0F0F1A; border-radius: 3rem;">
+    <div style="text-align: center; padding: 3rem 2rem;">
+      <span class="quiz-star">🏆</span>
+      <h2 class="section-title">Quiz & Win</h2>
+      <div class="section-subtitle">test your global knowledge</div>
+      <p style="max-width:600px; margin: 1rem auto;">Answer trivia, win exclusive passes and cultural prizes. Starts at 3PM daily.</p>
+      <button class="btn-crimson">Join the Quiz</button>
+    </div>
+    <!-- TODO: Link quiz button to actual quiz -->
+  </section>
+
+  <!-- REGISTRATION -->
+  <section id="register" class="container fade-up">
+    <h2 class="section-title">Register Now</h2>
+    <div class="tab-switcher">
+      <span class="tab active" id="tabConf">Conference</span>
+      <span class="tab" id="tabNet">Networking Space</span>
+    </div>
+    <div class="form-card">
+      <form id="registerForm">
+        <div class="form-group"><label>Full Name</label><input type="text" placeholder="John Doe"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+        <div class="form-group"><label>Phone</label><input type="tel" placeholder="+49 123 456"></div>
+        <div class="form-group"><label>University/Institution</label><input type="text" placeholder="..."></div>
+        <div class="form-group"><label>Session</label><select><option>Keynote (AM)</option><option>Workshop (PM)</option></select></div>
+        <button type="submit" class="btn-crimson" style="width:100%">Submit</button>
+        <p class="text-lavender" style="font-size:0.8rem; margin-top:1rem;">* All fields are required</p>
+      </form>
+    </div>
+    <!-- TODO: Connect form to real backend/email service -->
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='60' viewBox='0 0 200 60'%3E%3Crect width='200' height='60' fill='%2312121A' rx='10' /%3E%3Ctext x='20' y='40' fill='%23C4B5FD' font-family='Lato' font-size='24'%3EWORLD SUMMIT%3C/text%3E%3C/svg%3E" alt="World Summit Logo" class="footer-logo">
+    <!-- REPLACE 'YOUR_LOGO_HERE.png' with your actual logo file path -->
+    <h3 style="font-family:'Playfair Display'">World Summit – 2nd Edition</h3>
+    <div class="social-icons">
+      <a href="#" class="social-icon">f</a><a href="#" class="social-icon">t</a><a href="#" class="social-icon">in</a>
+    </div>
+    <div class="text-lavender">contact@worldsummit.com</div>
+    <div style="margin-top:2rem; opacity:0.5;">© 2025 World Summit. All rights reserved.</div>
+  </footer>
 
   <script>
     (function() {
+      // ----- NAvbar scroll & hamburger -----
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) navbar.classList.add('scrolled');
+        else navbar.classList.remove('scrolled');
+      });
+
+      const hamburger = document.getElementById('hamburger');
+      const navLinks = document.getElementById('navLinks');
+      hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+
+      // ----- HERO PARALLAX ORB -----
+      const orb = document.getElementById('orb');
+      document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 10;
+        if (orb) orb.style.transform = `translate(${x}px, ${y+20}%)`;
+      });
+
+      // ----- INTERSECTION OBSERVER (fade-up) -----
+      const faders = document.querySelectorAll('.fade-up');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.1 });
+      faders.forEach(el => observer.observe(el));
+
+      // ----- EXHIBITOR SCROLL BUTTONS -----
+      const scrollContainer = document.getElementById('exhibitorScroll');
+      document.getElementById('scrollLeft').addEventListener('click', () => {
+        scrollContainer.scrollBy({ left: -340, behavior: 'smooth' });
+      });
+      document.getElementById('scrollRight').addEventListener('click', () => {
+        scrollContainer.scrollBy({ left: 340, behavior: 'smooth' });
+      });
+
+      // ----- 3D TILT (exhibitor cards) -----
+      const tiltCards = document.querySelectorAll('.tilt-card');
+      tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = (y - centerY) / 10;
+          const rotateY = (centerX - x) / 10;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+        });
+      });
+
+      // ----- NETWORKING CANVAS (animated lines) -----
+      const canvas = document.getElementById('nodeCanvas');
+      const ctx = canvas?.getContext('2d');
+      function drawLines() {
+        if (!canvas) return;
+        const students = ['student1','student2','student3'].map(id => document.getElementById(id));
+        const experts = ['expert1','expert2','expert3'].map(id => document.getElementById(id));
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width; canvas.height = rect.height;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.strokeStyle = '#7C3AED';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([10, 10]);
+        const now = Date.now() / 300;
+        ctx.lineDashOffset = -now % 20;
+
+        students.forEach((s, i) => {
+          if (!s) return;
+          const sRect = s.getBoundingClientRect();
+          const pRect = canvas.parentElement.getBoundingClientRect();
+          const sx = sRect.left + sRect.width/2 - pRect.left;
+          const sy = sRect.top + sRect.height/2 - pRect.top;
+          experts.forEach(e => {
+            if (!e) return;
+            const eRect = e.getBoundingClientRect();
+            const ex = eRect.left + eRect.width/2 - pRect.left;
+            const ey = eRect.top + eRect.height/2 - pRect.top;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(ex, ey);
+            ctx.strokeStyle = '#C4B5FD';
+            ctx.stroke();
+          });
+        });
+        requestAnimationFrame(drawLines);
+      }
+      if (canvas) drawLines();
+      window.addEventListener('resize', () => { if(canvas) drawLines(); });
+
+      // ----- TABS -----
+      const tabConf = document.getElementById('tabConf');
+      const tabNet = document.getElementById('tabNet');
+      tabConf.addEventListener('click', () => {
+        tabConf.classList.add('active');
+        tabNet.classList.remove('active');
+      });
+      tabNet.addEventListener('click', () => {
+        tabNet.classList.add('active');
+        tabConf.classList.remove('active');
+      });
+
+      // ----- FORM PREVENT SUBMIT -----
+      document.getElementById('registerForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Thank you! (Demo – form not connected)');
+      });
+
+      // ----- BOUNCE CARDS (Conferences) – responsive with phone optimised -----
       const speakers = [
-        {
-          name: 'Dr. Sarah Chen',
-          topic: 'Future of Learning',
-          datetime: 'Sep 12 · 10:00',
-          bio: 'Neuroscientist exploring AI in education.',
-          country: '🇺🇸 USA'
-        },
-        {
-          name: 'Amara Okafor',
-          topic: 'Cultural Diplomacy',
-          datetime: 'Sep 12 · 14:00',
-          bio: 'Art as a bridge between nations.',
-          country: '🇳🇬 Nigeria'
-        },
-        {
-          name: 'Marco Valli',
-          topic: 'Startup Ecosystems',
-          datetime: 'Sep 13 · 11:30',
-          bio: 'From local to global: scaling startups.',
-          country: '🇮🇹 Italy'
-        },
-        {
-          name: 'Yuki Tanaka',
-          topic: 'Tech & Tradition',
-          datetime: 'Sep 13 · 16:00',
-          bio: 'Preserving heritage in the digital age.',
-          country: '🇯🇵 Japan'
-        },
-        {
-          name: 'Elena Petrova',
-          topic: 'Quantum Ethics',
-          datetime: 'Sep 14 · 09:30',
-          bio: 'Ethical frameworks for quantum computing.',
-          country: '🇷🇺 Russia'
-        }
+        { name: 'Dr. Sarah Chen', topic: 'Future of Learning', datetime: 'Sep 12 · 10:00', bio: 'Neuroscientist exploring AI in education.', country: '🇺🇸 USA' },
+        { name: 'Amara Okafor', topic: 'Cultural Diplomacy', datetime: 'Sep 12 · 14:00', bio: 'Art as a bridge between nations.', country: '🇳🇬 Nigeria' },
+        { name: 'Marco Valli', topic: 'Startup Ecosystems', datetime: 'Sep 13 · 11:30', bio: 'From local to global: scaling startups.', country: '🇮🇹 Italy' },
+        { name: 'Yuki Tanaka', topic: 'Tech & Tradition', datetime: 'Sep 13 · 16:00', bio: 'Preserving heritage in the digital age.', country: '🇯🇵 Japan' },
+        { name: 'Elena Petrova', topic: 'Quantum Ethics', datetime: 'Sep 14 · 09:30', bio: 'Ethical frameworks for quantum computing.', country: '🇷🇺 Russia' }
       ];
 
-      // Translation offsets (in pixels) based on screen width
+      // Translation offsets based on screen width
       function getOffsets() {
         const width = window.innerWidth;
         if (width <= 480) {
-          return [-80, -40, 0, 40, 80];     // phone: smaller spread
+          return [-70, -35, 0, 35, 70];     // phone: even smaller spread for side space
         } else if (width <= 700) {
           return [-140, -70, 0, 70, 140];   // tablet
         } else {
@@ -300,7 +973,6 @@
       // Rotation values (keep consistent)
       const rotValues = [12, 6, -2, -8, 4];
 
-      // Build transform strings
       function buildTransformStyles(offsets) {
         return offsets.map((offset, idx) => `rotate(${rotValues[idx]}deg) translate(${offset}px)`);
       }
@@ -309,8 +981,8 @@
       let transformStyles = buildTransformStyles(currentOffsets);
 
       const container = document.getElementById('bounceContainer');
+      container.innerHTML = ''; // clear any existing
 
-      // Create cards
       speakers.forEach((speaker, idx) => {
         const card = document.createElement('div');
         card.className = `bounce-card card-${idx}`;
@@ -324,7 +996,7 @@
           <div class="topic">${speaker.topic}</div>
           <div class="datetime">${speaker.datetime}</div>
           <div class="bio">${speaker.bio}</div>
-          <div class="country" style="font-size:0.8rem; margin-top:0.3rem;">${speaker.country}</div>
+          <div class="country" style="font-size:0.7rem; margin-top:0.2rem;">${speaker.country}</div>
         `;
 
         container.appendChild(card);
@@ -332,17 +1004,14 @@
 
       const cards = document.querySelectorAll('.bounce-card');
 
-      // Store original transforms
       cards.forEach((card, i) => {
         card.dataset.originalTransform = transformStyles[i];
       });
 
-      // Helper: remove rotation
       function removeRotation(transformStr) {
         return transformStr.replace(/rotate\([^)]*\)/, 'rotate(0deg)');
       }
 
-      // Helper: add offset to translate
       function addOffsetToTranslate(transformStr, offset) {
         const translateRegex = /translate\(([-0-9.]+)px\)/;
         const match = transformStr.match(translateRegex);
@@ -355,10 +1024,9 @@
         }
       }
 
-      // Hover offset based on screen size
       function getHoverOffset() {
         const width = window.innerWidth;
-        if (width <= 480) return 50;    // phone: smaller shift
+        if (width <= 480) return 40;    // phone: smaller shift
         if (width <= 700) return 100;   // tablet
         return 140;                      // desktop
       }
@@ -397,10 +1065,8 @@
         card.addEventListener('mouseleave', onCardLeave);
       });
 
-      // Update on resize
       window.addEventListener('resize', () => {
         const newOffsets = getOffsets();
-        // Check if offsets changed
         if (JSON.stringify(newOffsets) !== JSON.stringify(currentOffsets)) {
           currentOffsets = newOffsets;
           const newTransformStyles = buildTransformStyles(currentOffsets);
@@ -415,5 +1081,9 @@
 
     })();
   </script>
+  <!-- TODO comments -->
+  <!-- TODO: Replace 'YOUR_LOGO_HERE.png' with actual logo files throughout -->
+  <!-- TODO: Replace sponsor boxes, exhibitor flags, speaker photos with real content -->
+  <!-- TODO: Connect registration to backend -->
 </body>
 </html>
